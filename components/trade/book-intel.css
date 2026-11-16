@@ -1,0 +1,48 @@
+/* Order book intelligence layer (v2 only): F = your order previewed on the book, G = pressure lean + spread history in the centre row.
+   Facts from the open book and the order form; they change only on input or when a book batch lands. transform/opacity only. */
+
+/* F · levels the order would take: left-anchored orange tint scaled to the fraction taken, 2px orange leading edge */
+.t-row .bk-eat{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .2s cubic-bezier(.215,.61,.355,1)}
+.t-row .bk-eat.on{opacity:1}
+.t-row .bk-eat::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:hsl(var(--phoenix));z-index:1}
+.t-row .bk-eat>i{position:absolute;inset:0;background:hsl(var(--phoenix)/.2);transform-origin:left center;transition:transform .2s cubic-bezier(.215,.61,.355,1)}
+/* where a limit order would rest on its own side */
+.t-row.bk-own{box-shadow:inset 2px 0 0 hsl(var(--phoenix)),inset 0 0 0 1px hsl(var(--phoenix)/.35)}
+
+/* the centre row */
+.t-lad.sc .t-spr.v2.bk-mid{justify-content:space-between;gap:8px;container-type:inline-size;white-space:nowrap;overflow:hidden}
+.bk-mid .bk-sp{display:inline-flex;align-items:baseline;gap:8px;flex:none}
+.bk-mid .bk-ins{display:inline-flex;align-items:center;gap:8px;flex:none}
+
+/* G1 · pressure lean: a short axis, green (bids) left, red (asks) right, a dot that leans toward the heavier side */
+.bk-lean{position:relative;display:block;width:30px;height:14px;cursor:help;outline:none;border-radius:3px}
+.bk-lean:focus-visible{box-shadow:0 0 0 1px hsl(var(--phoenix))}
+.bk-lean .ax{position:absolute;left:0;right:0;top:6px;height:2px;border-radius:1px;background:linear-gradient(90deg,hsl(var(--buy)/.55),hsl(var(--button)) 50%,hsl(var(--sell)/.55))}
+.bk-lean .c{position:absolute;left:14.5px;top:3px;width:1px;height:8px;background:hsl(var(--muted-foreground)/.5)}
+.bk-lean .dot{position:absolute;left:0;top:3px;width:8px;height:8px;border-radius:50%;background:hsl(var(--foreground));transition:transform .9s cubic-bezier(.16,1,.3,1)}
+
+/* G2 · spread sparkline */
+.bk-spark{display:block;flex:none;cursor:help;outline:none;border-radius:3px}
+.bk-spark:focus-visible{box-shadow:0 0 0 1px hsl(var(--phoenix))}
+
+/* F · the answer, while a size is typed */
+.t-lad.sc .t-spr.v2.bk-mid.pv{justify-content:center}
+.t-lad.sc .t-spr.v2.bk-mid.two{height:42px;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.bk-mid .bk-l1{display:inline-flex;align-items:baseline;gap:4px;color:hsl(var(--muted-foreground))}
+.bk-mid .bk-l1 em{font-style:normal;display:inline-flex;gap:4px;color:hsl(var(--muted-foreground))}
+.bk-mid .bk-l1 b{font-weight:600;color:hsl(var(--phoenix))}
+.bk-mid .bk-l1 s{text-decoration:none;color:hsl(var(--muted-foreground)/.6)}
+.bk-mid .bk-tipc{cursor:help;outline:none;border-bottom:1px dotted hsl(var(--phoenix)/.7)}
+.bk-mid .bk-tipc:focus-visible{border-bottom-style:solid}
+.bk-mid .bk-l2{font:500 11px/14px var(--font);color:hsl(var(--muted-foreground))}
+.bk-mid .bk-l2.warn{color:hsl(38 92% 60%)}
+
+/* narrow books: drop the sparkline first, then the lean, then the 'Your fill' label; never wrap */
+@container (max-width:226px){.bk-mid .bk-spark{display:none}}
+@container (max-width:150px){.bk-mid .bk-lean{display:none}}
+@container (max-width:232px){.bk-mid .bk-l1 em{display:none}}
+@container (max-width:190px){.bk-mid .bk-l1{font-size:11px;gap:3px}}
+
+@media (prefers-reduced-motion:reduce){
+  .t-row .bk-eat,.t-row .bk-eat>i,.bk-lean .dot{transition:none}
+}

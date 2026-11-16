@@ -1,0 +1,1334 @@
+/* Trade screen. All classes prefixed t-. Uses the shared tokens/primitives from globals.css. */
+main.t-grid{padding-bottom:4px;grid-template-areas:"stats book form" "chart book form" "pos pos form";position:relative}
+.t-grid>.t-stats{grid-area:stats}.t-grid>.t-chart{grid-area:chart}.t-grid>.t-book{grid-area:book}.t-grid>.t-form{grid-area:form}.t-grid>.t-pos{grid-area:pos}
+.t-hrz{grid-column:1/4;grid-row:2;align-self:end;height:6px;margin-bottom:-6px;z-index:6;cursor:row-resize;display:flex;align-items:center;justify-content:center;gap:4px}
+.t-hrz i{width:4px;height:4px;border-radius:50%;background:hsl(var(--phoenix)/.5);display:block}
+.t-vrz{grid-column:1;grid-row:1/3;align-self:center;justify-self:end;width:4px;height:52px;margin-right:-5px;z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.t-vrz i{width:4px;height:4px;border-radius:50%;background:hsl(var(--phoenix)/.5);display:block}
+
+/* ---- stats panel ---- */
+.t-stats{overflow:visible!important;display:flex;flex-direction:column;position:relative}
+.t-tick{flex:none;height:33px;display:flex;align-items:center;padding:0 6px 0 8px;border-bottom:1px solid hsl(var(--button)/.3);position:relative}
+.t-tm{display:inline-flex;align-items:center;gap:8px;height:24px;padding:4px;border-radius:8px;font:600 12px/16px var(--font);white-space:nowrap}
+.t-tm:hover{background:hsl(var(--button)/.6)}
+.t-tm svg.fl{color:hsl(var(--phoenix))}
+.t-tsep{width:1px;height:20px;background:hsl(var(--button)/.8);margin:0 8px 0 8px;flex:none}
+.t-tscroll{flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth}
+.t-tscroll::-webkit-scrollbar{display:none}
+.t-tchip{flex:none;height:28px;display:flex;align-items:center;gap:6px;padding:0 8px;border-radius:6px;font:400 12px/16px var(--font);white-space:nowrap}
+.t-tchip>.sy,.t-tchip .v{font-weight:500}
+.t-tchip:hover{background:hsl(var(--button)/.6)}.t-tchip.on{background:hsl(var(--button)/.8)}
+.t-tchip img{width:18px;height:18px;border-radius:50%}
+.t-tchip .v{display:inline-flex;align-items:center;gap:2px}
+.t-tarr{position:absolute;right:4px;top:4px;width:24px;height:24px;border-radius:9999px;display:grid;place-items:center;background:hsl(var(--button));border:1px solid hsl(var(--phoenix)/.25);z-index:2;color:hsl(var(--phoenix))}
+.t-pop{position:absolute;z-index:40;background:hsl(var(--card));border:1px solid hsl(var(--border)/.8);border-radius:10px;padding:6px;box-shadow:0 8px 28px rgba(0,0,0,.55)}
+.t-pop .it{display:flex;align-items:center;gap:10px;width:100%;height:32px;padding:0 10px;border-radius:6px;font:500 13px/16px var(--font);text-align:left}
+.t-pop .it:hover,.t-pop .it.on{background:hsl(var(--button)/.8)}
+.t-pop .it .ck{margin-left:auto}
+.t-pop .lab{padding:8px 10px 4px;font:500 11px/16px var(--font);color:hsl(var(--muted-foreground));letter-spacing:.04em;text-transform:uppercase}
+.t-pop hr{border:0;border-top:1px solid hsl(var(--border)/.7);margin:4px 0}
+.t-mkt{flex:1;min-height:0;display:flex;align-items:center;gap:0;padding:0 10px 0 4px}
+.t-mkt>.t-star{margin-left:8px;margin-right:0}
+.t-star{width:24px;height:24px;display:grid;place-items:center;color:hsl(var(--muted-foreground));border-radius:4px}
+.t-star:hover{color:hsl(var(--foreground))}.t-star.on{color:hsl(var(--phoenix))}
+.t-sel{display:flex;align-items:center;gap:8px;height:52px;padding:0 12px 0 6px;border-radius:0 8px 8px 0}
+.t-sel:hover,.t-sel.open{background:hsl(var(--button)/.5)}
+.t-sel img{width:24px;height:24px;border-radius:50%}
+.t-sel .nm{font:500 20px/28px var(--font)}
+.t-sel .lv{height:20px;padding:2px 8px;border-radius:8px;background:hsl(var(--button));font:500 12px/16px var(--font)}
+.t-st{display:flex;gap:18px;margin-left:12px;flex:1;min-width:0;overflow:hidden}
+.t-st>div{display:flex;flex-direction:column;gap:4px;white-space:nowrap}
+.t-st .l{font:500 12px/16px var(--font);color:hsl(var(--muted-foreground));text-decoration:underline dotted;text-underline-offset:3px;text-decoration-color:hsl(var(--muted-foreground)/.6)}
+.t-st .v{font:500 12px/16px var(--font);display:flex;align-items:center;gap:6px}
+.t-st .v.big{font-size:12px}
+/* market selector */
+.t-msel{position:absolute;left:0;top:calc(100% + 4px);width:910px;max-width:calc(100vw - 20px);background:hsl(var(--card));border:1px solid hsl(var(--border)/.8);border-radius:10px;z-index:45;box-shadow:0 10px 40px rgba(0,0,0,.6);padding:14px 14px 10px}
+.t-msearch{display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;border-radius:8px;background:hsl(var(--input));color:hsl(var(--muted-foreground))}
+.t-msearch input{flex:1;background:none;border:0;outline:0;font:400 13px/16px var(--font);color:hsl(var(--foreground))}
+.t-mtabs{display:flex;gap:4px;margin:12px 0 4px;border-bottom:1px solid hsl(var(--border)/.7)}
+.t-mtabs button{padding:6px 8px 9px;font:500 12px/16px var(--font);color:hsl(var(--muted-foreground));border-bottom:2px solid transparent;margin-bottom:-1px}
+.t-mtabs button.on{color:hsl(var(--foreground));border-bottom-color:hsl(var(--phoenix))}
+.t-mscroll{max-height:384px;overflow-y:auto;scrollbar-width:thin}
+.t-mt{width:100%;border-collapse:collapse;font:400 12px/16px var(--font)}
+.t-mt th{position:sticky;top:0;background:hsl(var(--card));z-index:1;font-weight:400;color:hsl(var(--muted-foreground));text-align:right;padding:10px 8px;white-space:nowrap;cursor:pointer}
+.t-mt th:first-child,.t-mt td:first-child{text-align:left}
+.t-mt td{text-align:right;padding:0 8px;height:48px;white-space:nowrap}
+.t-mt tbody tr{cursor:pointer;border-left:2px solid transparent}
+.t-mt tbody tr.hl{background:hsl(var(--button)/.5);border-left-color:hsl(var(--phoenix))}
+.t-mt .tmk{display:flex;align-items:center;gap:10px;font:500 13px/16px var(--font)}
+.t-mt .tmk img{width:18px;height:18px;border-radius:50%}
+.t-mt .lvb{display:inline-block;height:20px;padding:0 8px;border-radius:6px;background:hsl(var(--button));font:500 12px/20px var(--font)}
+.t-mt .gift{color:hsl(var(--phoenix))}
+.t-mkeys{display:flex;gap:14px;padding:10px 4px 0;border-top:1px solid hsl(var(--border)/.7);margin-top:4px;font:400 11px/16px var(--font);color:hsl(var(--muted-foreground))}
+.t-mkeys kbd{font:500 11px/16px var(--font);background:hsl(var(--button));border-radius:4px;padding:2px 6px;margin-right:6px;color:hsl(var(--foreground))}
+
+/* ---- chart ---- */
+.t-chart{display:flex;flex-direction:column;position:relative;overflow:visible!important;padding:6px}
+.t-chart.fs{position:fixed;inset:8px;z-index:60;grid-area:auto}
+.t-ch-hd{flex:none;height:51px;display:flex;align-items:flex-start;padding:0 3px 0 1.5px;gap:2px;position:relative;z-index:3}
+.t-ch-hd>.t-tf,.t-ch-hd>div:not(.t-seg)>.t-tf,.t-ch-hd>div>.t-ind{margin-top:5px}
+.t-ch-hd>.t-cmp,.t-ch-hd>.t-seg,.t-ch-hd>div>.t-ib,.t-ch-hd>.t-ib{margin-top:11px}
+.t-tf{height:28px;padding:0 6px;border-radius:6px;font:400 14px/20px var(--font);color:hsl(var(--muted-foreground))}
+.t-tf:hover{color:hsl(var(--foreground))}.t-tf.on{color:hsl(var(--foreground));background:hsl(var(--button)/.7)}
+.t-ind{display:flex;align-items:center;gap:4px;height:28px;padding:0 8px 0 0;margin-left:14.5px;color:hsl(var(--muted-foreground));font:400 14px/20px var(--font);border-radius:6px}
+.t-ind:hover{color:hsl(var(--foreground))}
+.t-sp{flex:1}
+.t-cmp{display:flex;align-items:center;gap:5px;height:32px;padding:0 8px;border:1px solid hsl(var(--button));border-radius:6px;font:500 12px/16px var(--font);color:hsl(var(--muted-foreground));margin-right:2px}
+.t-cmp:hover{background:hsl(var(--button)/.5)}
+.t-seg{display:flex;padding:2px;border:1px solid hsl(var(--button));border-radius:6px;height:32px;gap:0}
+.t-seg button{padding:0 10px;width:76px;flex:none;white-space:nowrap;border-radius:8px;font:500 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.t-seg button.on{color:hsl(var(--phoenix));border:1px solid hsl(var(--phoenix));border-radius:4px;background:hsl(var(--phoenix)/.1);height:26px;align-self:center}
+.t-ib{width:32px;height:32px;display:grid;place-items:center;color:hsl(var(--muted-foreground));border-radius:6px}
+.t-ib:hover,.t-ib.on{color:hsl(var(--foreground))}
+.t-ch-bd{flex:1;min-height:0;display:flex;position:relative;overflow:visible}
+.t-tools{flex:none;width:56px;padding:2px 0 0;display:flex;flex-direction:column;align-items:flex-start;gap:10px;color:hsl(var(--muted-foreground));overflow:hidden;position:relative;z-index:3;height:calc(100% + 38px)}
+.t-tools .tw{position:relative;width:56px;height:28px;flex:none}
+.t-tools button{position:absolute;left:9px;top:-3px;width:34px;height:34px;display:grid;place-items:center;border-radius:6px;color:#94A3B8}
+.t-tools button:hover{color:#F4F4F5;background:#212126}
+.t-tools button.on{background:#212126;color:#FFA548}
+.t-tools .sub{position:absolute;left:45px;top:10px;width:4px;height:7px;color:#94A3B8;opacity:0;pointer-events:none}
+.t-tools:hover .sub{opacity:1}
+.t-tools .gap{flex:none;height:3px}
+.t-plot{flex:1;min-width:0;position:relative;overflow:hidden}
+.t-plot canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.t-leg{position:absolute;left:8px;top:-5px;z-index:2;font:400 14px/24px var(--font);pointer-events:none;white-space:nowrap}
+.t-leg .vol{margin-top:0}.t-leg>div>.o:not(:first-child){margin-left:3.5px}.t-leg .dots{margin-left:8px;vertical-align:middle;display:inline-flex;color:#94A3B8;opacity:.6}
+.t-leg .o{color:hsl(var(--muted-foreground))}.t-leg .o b{font-weight:400}
+.t-collapse{position:absolute;left:8px;top:46px;z-index:2;width:29px;height:20px;border-radius:5px;background:hsl(var(--card-light));display:grid;place-items:center;border:1px solid hsl(var(--border)/.6);color:hsl(var(--foreground))}
+.t-tv{position:absolute;left:12px;bottom:41.5px;width:33px;height:33px;border-radius:50%;background:#101013;border:1px solid #34353F;display:grid;place-items:center;z-index:2;pointer-events:none}
+.t-ch-ft{flex:none;height:38px;display:flex;align-items:center;padding:0 6.5px 0 63px;gap:0;position:relative;z-index:3}
+.t-rng{height:28px;padding:0 7px;border-radius:6px;font:400 14px/20px var(--font);color:hsl(var(--muted-foreground))}
+.t-rng:hover,.t-rng.on{color:hsl(var(--foreground))}
+.t-clk{font:400 14px/20px var(--font);color:hsl(var(--muted-foreground));margin-right:10px}
+.t-tg{height:32px;padding:0 6px;border-radius:6px;font:400 14px/20px var(--font);color:hsl(var(--muted-foreground))}
+.t-tg.on{color:hsl(var(--phoenix));background:hsl(var(--button)/.7)}
+.t-cset{position:absolute;right:38px;top:51px;width:180px;padding:8px;z-index:50;border-radius:6px;border:1px solid hsl(var(--button));box-shadow:none}
+.t-cset .g{display:flex;flex-direction:column;gap:2px;padding:0;border:0;margin:0}.t-cset .g+.g{border-top:1px solid hsl(var(--button)/.5);margin-top:8px;padding-top:8px}
+.t-ck{display:flex;align-items:center;gap:8px;padding:4px;height:24px;border-radius:4px;font:400 12px/16px var(--font);color:hsl(var(--muted-foreground));cursor:pointer;width:100%;text-align:left}.t-ck:not(.sub){font-weight:600;color:hsl(var(--foreground))}
+.t-ck.sub{padding-left:16px}
+.t-box{width:16px;height:16px;border-radius:4px;border:1px solid hsl(var(--muted-foreground));background:hsl(var(--phoenix)/.1);display:grid;place-items:center;flex:none;color:#18181b}
+.t-box.on{background:hsl(var(--phoenix));border-color:hsl(var(--phoenix))}
+.t-ck.dis{opacity:.45;cursor:not-allowed}
+.t-skelwrap{position:absolute;inset:0;z-index:4;background:hsl(var(--card));padding:12px;display:flex;flex-direction:column;gap:10px}
+
+/* ---- order book ---- */
+.t-book{display:flex;flex-direction:column;padding:6px 6px 0}
+.t-btabs{flex:none;position:relative;display:flex;gap:8px;height:37px;border-bottom:1px solid hsl(var(--button)/.3);margin-bottom:6px}
+.t-btabs button{flex:1;padding:8px 10px;font:600 13px/19.5px var(--font);color:hsl(var(--muted-foreground))}
+.t-btabs button.on{color:hsl(var(--foreground))}
+.t-btabs i{position:absolute;bottom:-1px;height:2px;width:calc(50% - 4px);background:hsl(var(--phoenix));transition:left .2s}
+.t-bctl{flex:none;display:flex;align-items:center;justify-content:space-between;height:24px;margin-bottom:8px;position:relative}
+.t-agg{display:flex;align-items:center;gap:4px;height:24px;padding:4px;border-radius:4px;font:600 12px/16px var(--font)}
+.t-agg:hover{background:hsl(var(--button)/.6)}
+.t-un{display:flex;align-items:center;gap:8px;font:600 12px/12px var(--font);margin-left:auto;margin-right:11px;color:hsl(var(--foreground))}
+.t-un svg{color:hsl(var(--muted-foreground));width:16px;height:16px}
+.t-lay{display:flex;align-items:center;gap:8px}
+.t-bhd{flex:none;display:grid;grid-template-columns:30% 30% 40%;padding:0;font:400 12px/16px var(--font);color:hsl(var(--muted-foreground));height:16px;margin-bottom:7px;align-items:center}
+.t-bhd span:nth-child(n+2){text-align:right}.t-bhd span:nth-child(3){padding-left:4px}
+.t-lad{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden;position:relative;margin:0 -6px}
+.t-side{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+.t-side.bids{justify-content:flex-start}
+.t-row{position:relative;flex:none;height:var(--rh,24px);display:grid;grid-template-columns:30% 30% 40%;align-items:center;padding:0 6px;font:400 12px/16px var(--font);cursor:pointer;font-variant-numeric:tabular-nums}
+.t-row span{position:relative;text-align:right}.t-row span:first-of-type{text-align:left}
+.t-row:hover{background:hsl(var(--button)/.4)}
+.t-row .bt,.t-row .bs{position:absolute;left:0;width:100%;border-radius:0}
+.t-row .bt{top:0;bottom:0}.t-row .bs{top:1px;bottom:1px}
+.t-row.a .bt{background:hsl(var(--sell)/.15)}.t-row.a .bs{background:hsl(var(--sell)/.2)}
+.t-row.b .bt{background:hsl(var(--buy)/.15)}.t-row.b .bs{background:hsl(var(--buy)/.2)}
+.t-row.a span:first-of-type{color:hsl(var(--sell))}.t-row.b span:first-of-type{color:hsl(var(--buy))}
+.t-spr{flex:none;height:28px;display:grid;grid-template-columns:repeat(3,1fr);align-items:center;padding:0 6px;background:hsl(var(--card-light));font:600 12px/16px var(--font)}
+.t-spr span:nth-child(2){text-align:center}.t-spr span:nth-child(3){text-align:right}
+.t-tl{flex:1;min-height:0;overflow:hidden;margin:0 -6px}
+.t-trow{display:grid;grid-template-columns:30% 30% 40%;padding:0 6px;height:24px;align-items:center;font:400 12px/16px var(--font);font-variant-numeric:tabular-nums}
+.t-trow span:nth-child(n+2){text-align:right}
+
+/* ---- order form ---- */
+.t-form{overflow:visible!important;display:flex;flex-direction:column;padding:12px 12px 8px;gap:0;position:relative}
+.t-fscroll{flex:1;min-height:0;overflow-y:auto;overflow-x:visible;scrollbar-width:none;margin:0 -12px;padding:0 12px}
+.t-fscroll::-webkit-scrollbar{display:none}
+.t-cross{width:100%;height:30px;border-radius:8px;padding:8px 16px;background:hsl(var(--button));display:flex;align-items:center;justify-content:center;gap:8px;font:600 13px/19.5px var(--font)}
+.t-cross:disabled{cursor:default}
+.t-cross.ghost{color:hsl(var(--muted-foreground))}
+.t-ftabs{display:flex;justify-content:space-between;position:relative;height:36px;margin-top:8px;border-bottom:1px solid hsl(var(--button)/.3)}
+.t-ftabs button{flex:none;width:85px;padding:8px 10px;font:600 13px/19.5px var(--font);color:hsl(var(--muted-foreground));display:flex;align-items:center;justify-content:center;gap:4px}
+.t-ftabs button{border-bottom:2px solid transparent;margin-bottom:-1px}.t-ftabs button.on{color:hsl(var(--foreground));border-bottom-color:hsl(var(--phoenix))}
+.t-ftabs button:last-of-type{width:95px}
+.t-ftabs i{position:absolute;bottom:-1px;height:2px;background:hsl(var(--phoenix));transition:left .2s,width .2s}
+.t-side2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:11px;background:hsl(var(--card-light));border-radius:8px;padding:0;height:39px;position:relative}
+.t-side2 button{position:relative;z-index:1;padding:10px;font:600 13px/18.5714px var(--font);color:hsl(var(--muted-foreground));border-radius:8px}
+.t-side2 button.on,.t-side2 button.on.s{color:hsl(var(--card-light))}
+.t-side2 .pill{position:absolute;top:0;bottom:0;width:calc(50% - 4px);border-radius:8px;transition:left .2s,background .2s}
+.t-kv{display:flex;justify-content:space-between;align-items:center;height:24px;padding:0 12px;font:400 12px/12px var(--font);color:hsl(var(--muted-foreground));margin-top:14px}
+.t-kv+.t-kv{margin-top:0}
+.t-kv b{font:600 12px/12px var(--font);color:hsl(var(--foreground))}.t-kv b.dim{color:hsl(var(--muted-foreground))}
+.t-osz{margin-top:14px;background:hsl(var(--card-light));border-radius:8px;padding:12px 12px 16px}
+.t-osz.foc{box-shadow:inset 0 0 0 1px hsl(var(--phoenix))}
+.t-osz .hd{display:flex;justify-content:space-between;align-items:flex-start}.t-osz .hd>div:first-child{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.t-osz .tlb{display:flex;align-items:center;gap:6px;font:400 12px/12px var(--font);color:hsl(var(--muted-foreground));margin-top:0}
+.t-osz .tlb svg{color:hsl(var(--phoenix))}
+.t-osz .rt{text-align:right}
+.t-osz input{width:130px;background:none;border:0;outline:0;text-align:right;font:400 28px/32px var(--font);color:hsl(var(--foreground));caret-color:hsl(var(--phoenix))}
+.t-osz input::placeholder{color:hsl(var(--foreground)/.9)}
+.t-osz .sub{font:400 12px/12px var(--font);color:hsl(var(--muted-foreground));margin-top:4px}
+.t-unit{display:inline-flex;align-items:center;gap:4px;height:24px;padding:6px 8px;border-radius:4px;background:hsl(var(--button));font:400 12px/12px var(--font);margin-top:0}
+.t-slrow{display:flex;align-items:center;gap:0;margin-top:14px;height:24px}
+.t-sl{position:relative;flex:1;height:24px;margin:0 29px 0 8px;cursor:pointer;touch-action:none}
+.t-sl .tr{position:absolute;left:0;right:0;top:10px;height:4px;border-radius:9999px;background:hsl(var(--button))}
+.t-sl .fl{position:absolute;left:0;top:10px;height:4px;border-radius:9999px;background:hsl(var(--muted-foreground)/.8)}
+.t-sl .st{position:absolute;top:10px;width:4px;height:4px;border-radius:50%;background:hsl(var(--button));transform:translateX(-50%)}
+.t-sl .kn{position:absolute;top:5px;width:14px;height:14px;border-radius:50%;background:hsl(var(--muted-foreground));transform:translateX(-50%)}
+.t-sl.act .kn{background:hsl(var(--foreground))}
+.t-sl.dis{opacity:.7;cursor:default}
+.t-max{display:inline-flex;align-items:center;gap:4px;height:24px;padding:6px 8px;border-radius:4px;background:hsl(var(--button));font:400 12px/12px var(--font);color:hsl(var(--foreground))}
+.t-max.on{color:hsl(var(--foreground))}
+.t-lev{margin-top:12px;height:42px;border:1px solid hsl(var(--button));border-radius:8px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;font:400 12px/12px var(--font);color:hsl(var(--muted-foreground))}
+.t-lev .l{display:flex;align-items:center;gap:8px}
+.t-lev .v{font:600 16px/16px var(--font);color:hsl(var(--foreground))}.t-lev .v.dim{color:hsl(var(--muted-foreground))}.t-lev .v.or{color:hsl(var(--primary))}
+.t-chk{display:flex;align-items:center;gap:8px;margin-top:20px;padding-left:12px;font:600 12px/16px var(--font);color:hsl(var(--muted-foreground));cursor:pointer;width:100%;text-align:left}
+.t-chk+.t-chk{margin-top:16px}
+.t-chk .t-box{width:16px;height:16px;border-radius:4px;border:1px solid hsl(var(--muted-foreground));background:hsl(var(--phoenix)/.1)}.t-chk .t-box.on{background:hsl(var(--phoenix));border-color:hsl(var(--phoenix))}
+.t-chk.dis{opacity:.4;cursor:not-allowed}
+.t-chk.muted{color:hsl(var(--muted-foreground))}
+.t-tpsl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.t-tpf{display:flex;align-items:center;justify-content:space-between;gap:6px;height:40px;padding:0 10px;border-radius:8px;background:hsl(var(--input));border:1px solid hsl(var(--border)/.5);font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.t-tpf:focus-within{border-color:hsl(var(--phoenix))}
+.t-tpf input{flex:1;min-width:0;background:none;border:0;outline:0;text-align:right;font:400 12px/16px var(--font);color:hsl(var(--foreground))}
+.t-tpf button{color:hsl(var(--muted-foreground))}
+.t-fbtn{margin-top:20px;flex:none}
+.t-form .cta{height:46px;font:600 16px/24px var(--font)}
+.t-form .cta.go{background:hsl(var(--phoenix));color:#000;border:0;box-shadow:none}.t-form .cta.go:hover:not(:disabled){background:hsl(var(--phoenix)/.88)}
+.t-form .cta.buy:disabled{background:hsl(var(--buy)/.45);color:hsl(240 5% 96%/.85)}
+.t-form .cta.sell:disabled{background:hsl(var(--sell)/.45);color:hsl(240 5% 96%/.85)}
+.t-form .cta.warn:disabled{background:hsl(var(--sell)/.25);color:hsl(var(--sell))}
+.t-form .cta.ghostb:disabled{background:hsl(var(--button));color:hsl(var(--muted-foreground))}
+.t-sum{margin-top:20px;background:hsl(var(--card-light));border-radius:10px;padding:12px;position:relative;display:flex;flex-direction:column;gap:6px}
+.t-sum .r{display:flex;justify-content:space-between;align-items:center;height:20px;font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.t-sum .r b{font-weight:500;color:hsl(var(--foreground));display:flex;align-items:center;gap:6px}
+.t-sum s{color:hsl(var(--muted-foreground));margin-right:2px}
+.t-sum .ed{color:hsl(var(--phoenix));display:inline-grid;place-items:center}
+.t-slip{position:absolute;right:24px;bottom:calc(100% - 50px);width:320px;z-index:50;padding:12px;border-radius:12px;background:hsl(var(--card));border:1px solid hsl(var(--button));box-shadow:none}
+.t-slip .ps{display:grid;grid-template-columns:repeat(4,68px);gap:8px}
+.t-slip .ps button,.t-slip .ps label{height:32px;border-radius:8px;background:hsl(var(--button));font:600 14px/20px var(--font);padding:4px 8px;text-align:center;border:1px solid transparent;color:hsl(var(--foreground))}
+.t-slip .ps label{background:hsl(var(--card-light));display:flex;align-items:center;gap:2px;font-weight:400}
+.t-slip .ps .on{border-color:hsl(var(--phoenix))}
+.t-slip .ps input{flex:1;min-width:0;width:100%;height:100%;background:none;border:0;outline:0;text-align:right;padding:0;font:400 14px/14px var(--font);color:hsl(var(--foreground))}
+.t-slip p{margin:12px 0 0;font:500 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.t-xpop{position:absolute;left:0;right:0;top:52px;z-index:55;padding:12px 16px;border-radius:8px;background:hsl(var(--card));border:1px solid rgb(45,55,72);display:flex;flex-direction:column;gap:16px}
+.t-xopt{text-align:left;padding:12px;border-radius:8px;border:1px solid rgb(45,55,72);display:grid;grid-template-columns:12px 1fr;gap:8px 12px;align-items:start}
+.t-xopt.on{border-color:rgb(255,154,71);background:rgba(255,190,138,.1)}
+.t-xopt .rd{width:12px;height:12px;border-radius:50%;border:1px solid hsl(var(--muted-foreground));display:grid;place-items:center}
+.t-xopt.on .rd{border-color:rgb(255,154,71)}.t-xopt.on .rd::after{content:"";width:6px;height:6px;border-radius:50%;background:rgb(255,154,71)}
+.t-xopt b{font:700 12px/12px var(--font)}.t-xopt p{grid-column:2;margin:0;font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.t-pop.t-advm{position:absolute;right:12px;top:95px;width:176px;z-index:55;padding:4px;border-radius:8px;border-color:rgb(45,55,72);box-shadow:none}
+.t-pop.t-advm .it{height:36px;padding:8px 12px;font:600 13px/19.5px var(--font);color:hsl(var(--muted-foreground))}
+.t-opts{display:flex;flex-direction:column;gap:6px}
+
+/* ---- dialogs ---- */
+.t-dlg{width:min(430px,calc(100vw - 32px));padding:20px 24px 24px}
+.t-dlg .mhd{margin-bottom:16px}
+.t-dlg .sumline{display:flex;align-items:center;gap:10px;font:500 18px/24px var(--font);margin-bottom:16px}
+.t-box2{background:hsl(var(--card-light));border-radius:10px;padding:12px 14px;display:flex;flex-direction:column}
+.t-box2 .r{display:flex;justify-content:space-between;align-items:center;min-height:30px;font:400 13px/20px var(--font);color:hsl(var(--muted-foreground))}
+.t-box2 .r b{font-weight:400;color:hsl(var(--foreground));display:flex;align-items:center;gap:6px}
+.t-box2 hr{border:0;border-top:1px solid hsl(var(--border)/.6);margin:6px 0}
+.t-spons{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:6px;background:hsl(var(--buy)/.15);color:hsl(var(--buy));font:500 12px/22px var(--font)}
+.t-dchk{display:flex;align-items:center;gap:10px;margin:16px 0;font:400 13px/20px var(--font);cursor:pointer}
+.t-dlg .cta{margin-top:4px}.t-dlg .cta.sec{background:hsl(var(--button));color:hsl(var(--foreground))}
+.t-dsl{position:relative;height:20px;flex:1;cursor:pointer;touch-action:none}
+.t-dsl .tr{position:absolute;left:0;right:0;top:9px;height:3px;border-radius:2px;background:hsl(var(--muted))}
+.t-dsl .fl{position:absolute;left:0;top:9px;height:3px;border-radius:2px;background:hsl(var(--phoenix))}
+.t-dsl .kn{position:absolute;top:2px;width:16px;height:16px;border-radius:50%;background:hsl(var(--phoenix));transform:translateX(-50%)}
+.t-pctbox{width:70px;height:40px;border-radius:8px;background:hsl(var(--input));display:flex;align-items:center;justify-content:center;font:500 13px/16px var(--font)}
+.t-rowf{display:flex;align-items:center;gap:12px;background:hsl(var(--input));border-radius:10px;padding:10px 14px;margin-bottom:12px}
+.t-rowf .l{color:hsl(var(--muted-foreground));font:400 13px/20px var(--font)}
+.t-rowf input{flex:1;background:none;border:0;outline:0;text-align:right;font:500 16px/24px var(--font)}
+.t-ar{display:inline-flex;align-items:center;gap:6px}
+.t-share{border-radius:14px;padding:20px;background:linear-gradient(160deg,hsl(150 40% 18%),hsl(150 30% 11%));border:1px solid hsl(150 30% 25%);margin-bottom:14px;position:relative;overflow:hidden}
+.t-share.neg{background:linear-gradient(160deg,hsl(0 40% 20%),hsl(0 30% 11%));border-color:hsl(0 30% 28%)}
+.t-share .big{font:500 44px/52px var(--font);margin:18px 0 22px;display:flex;align-items:center;gap:8px}
+.t-share .ee{display:flex;gap:32px;font:400 13px/20px var(--font);color:hsl(var(--muted-foreground))}.t-share .ee b{display:block;color:hsl(var(--foreground));font:500 16px/24px var(--font)}
+.t-tabs2{display:flex;border-bottom:1px solid hsl(var(--border)/.7);margin-bottom:12px}
+.t-tabs2 button{flex:1;padding:10px;font:500 14px/20px var(--font);color:hsl(var(--muted-foreground));border-bottom:2px solid transparent;margin-bottom:-1px}
+.t-tabs2 button.on{color:hsl(var(--foreground));border-bottom-color:hsl(var(--phoenix))}
+.t-tgl{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:hsl(var(--input));border-radius:10px;margin-bottom:14px}
+.t-tgl button{height:36px;border-radius:8px;font:500 13px/36px var(--font);color:hsl(var(--muted-foreground));border:1px solid transparent}
+.t-tgl button.on{border-color:hsl(var(--phoenix));color:hsl(var(--phoenix));background:hsl(var(--phoenix)/.08)}
+.t-ca{display:flex;flex-direction:column;gap:0}
+.t-ca .p{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;background:hsl(var(--card-light));margin-bottom:14px;font:500 13px/20px var(--font)}
+
+.t-pos{display:flex;min-width:0;min-height:0}.t-pos>*{flex:1;min-width:0;min-height:0}
+.t-tpsl{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.t-tpf{min-width:0;padding:0 8px;gap:4px;white-space:nowrap}
+.t-tpf>span:first-child{flex:none}
+.t-tpf>span:nth-child(2){flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-end}
+.t-tpf input{width:100%;min-width:0}
+.t-kv b.buy,.t-sum b.buy,.t-box2 b.buy{color:hsl(var(--buy))}.t-kv b.sell,.t-sum b.sell,.t-box2 b.sell{color:hsl(var(--sell))}
+
+.t-max:disabled{color:hsl(var(--muted-foreground));background:hsl(var(--button)/.5)}
+.t-pop.tm{padding:8px;border-radius:6px;border:1px solid hsl(var(--button));box-shadow:none;display:flex;flex-direction:column}
+.tm .it{position:relative;height:28px;padding:6px 32px 6px 8px;gap:8px;border-radius:4px;font:400 12px/16px var(--font);margin-bottom:6px;flex:none}
+.tm .it:last-child{margin-bottom:0}
+.tm .it.on{font-weight:600;background:hsl(var(--button))}.tm .it:hover{background:hsl(var(--button)/.5)}
+.tm .it .ck{position:absolute;right:8px;margin:0}
+.tm hr{border:0;border-top:1px solid hsl(var(--button)/.5);margin:0 0 10px}
+.tm .lab{padding:0 8px 4px;font:500 10px/15px var(--font);letter-spacing:0;text-transform:none}
+
+
+/* ===== motion / hover states, measured on phoenix.trade ===== */
+.chv{transition-property:transform;transition-duration:.2s;transition-timing-function:var(--ease-in-out)}.chv.o{transform:rotate(-180deg)}
+/* tabs: color + border-color 150ms ease-out; hover brightens muted -> foreground */
+.t-btabs button,.t-ftabs button,.t-mtabs button,.t-tabs2 button{transition-property:color,border-color;transition-duration:.15s;transition-timing-function:var(--ease-out)}
+.t-btabs button:hover,.t-ftabs button:hover,.t-mtabs button:hover,.t-tabs2 button:hover{color:hsl(var(--foreground))}
+.t-btabs i{display:none}
+.t-btabs button{border-bottom:2px solid transparent;margin-bottom:-1px}.t-btabs button.on{border-bottom-color:hsl(var(--phoenix))}
+/* generic controls: color/background/border 150ms in-out */
+.t-tf,.t-ind,.t-ib,.t-rng,.t-tg,.t-tools button,.t-ck,.t-chk,.t-xopt,.t-pop .it,.t-tpf,.t-tgl button,.t-mt tbody tr,.t-row,.t-collapse,.t-pop .it .ck{transition-property:color,background-color,border-color;transition-duration:.15s;transition-timing-function:var(--ease-in-out)}
+.t-box{transition-property:background-color,border-color;transition-duration:.15s;transition-timing-function:var(--ease-in-out)}
+.t-tf:hover,.t-ind:hover,.t-rng:hover,.t-tg:hover{color:hsl(var(--foreground))}
+.t-ib{transition-property:color;transition-duration:.15s;transition-timing-function:var(--ease-in-out)}
+/* ticker bar */
+.t-tm{background:hsl(var(--card));transition-property:background-color,color;transition-duration:.1s;transition-timing-function:var(--ease-out)}
+.t-tm:hover{background:hsl(var(--card-light))}
+.t-tchip{transition:none}.t-tchip:hover{background:hsl(var(--card-light))}.t-tchip.on:hover{background:hsl(var(--button)/.8)}
+.t-tarr{opacity:0;transition-property:opacity;transition-duration:.15s;transition-timing-function:var(--ease-out)}.t-tick:hover .t-tarr,.t-tarr:hover,.t-tarr:focus-visible{opacity:1}
+/* market header */
+.t-star{transition-property:color;transition-duration:.1s;transition-timing-function:var(--ease-out)}.t-star:hover,.t-star.on:hover{color:rgb(255,163,71)}
+.t-sel:hover,.t-sel.open{background:none}
+.t-cmp{background:hsl(var(--card));transition-property:color,background-color;transition-duration:.15s;transition-timing-function:var(--ease-in-out)}
+.t-cmp:hover{background:hsl(var(--card-light));color:hsl(var(--foreground))}
+.t-seg button{transition-property:color,background-color,border-color;transition-duration:.2s;transition-timing-function:var(--ease-in-out)}
+.t-seg button:not(.on):hover{color:hsl(var(--foreground))}
+.t-st .v{transition-property:color;transition-duration:.3s;transition-timing-function:var(--ease-in-out)}
+/* order book */
+.t-agg{transition-property:background-color;transition-duration:.15s;transition-timing-function:var(--ease-in-out)}.t-agg:hover{background:hsl(var(--button))}
+.t-row .bt,.t-row .bs{width:100%;transition-property:clip-path;transition-duration:.15s;transition-timing-function:var(--ease-out-cubic)}
+.t-row .fl{position:absolute;inset:0;pointer-events:none}
+.t-row .bs.bf1{animation:bar-flash .4s ease-out}.t-row .bs.bf2{animation:bar-flash2 .4s ease-out}
+@keyframes bar-flash2{0%{filter:brightness(1.8)}100%{filter:brightness(1)}}
+.t-trow{will-change:auto}
+/* order form */
+.t-cross{transition-property:background-color;transition-duration:.1s;transition-timing-function:var(--ease-out)}.t-cross:not(:disabled):hover{background:rgb(83,83,92)}
+.t-cross:disabled{cursor:not-allowed;opacity:.5}
+.t-unit,.t-max{transition-property:background-color,color;transition-duration:.1s;transition-timing-function:var(--ease-out)}
+.t-unit:hover,.t-max:not(:disabled):hover{background:rgb(83,83,92)}
+.t-max:disabled{opacity:.5;cursor:not-allowed;background:hsl(var(--button))}
+.t-sl.dis{opacity:.5;cursor:not-allowed}
+.t-sl .kn{transition-property:background-color;transition-duration:.15s;transition-timing-function:var(--ease-in-out)}
+.t-sum .ed{transition-property:color,opacity;transition-duration:.1s;transition-timing-function:var(--ease-out)}
+.t-chk.dis{opacity:.5;cursor:default}
+.t-ck,.t-chk{transition:none}
+.t-sel{transition-property:background-color;transition-duration:.1s;transition-timing-function:var(--ease-out)}
+.t-ck.dis{opacity:.5}
+.t-osz{transition-property:box-shadow;transition-duration:.15s;transition-timing-function:var(--ease-in-out)}
+.t-side2 button{transition-property:color;transition-duration:.2s;transition-timing-function:var(--ease-in-out)}
+.t-side2 button:not(.on):hover{color:hsl(var(--foreground))}
+.t-side2 .pill{transition-property:left,background-color;transition-duration:.2s;transition-timing-function:var(--ease-in-out)}
+.t-form .cta.buy:not(:disabled):hover{background:hsl(var(--buy)/.9)}.t-form .cta.sell:not(:disabled):hover{background:hsl(var(--sell)/.9)}
+.t-form .cta.go:hover{background:hsl(var(--card))}
+/* dialogs */
+.t-dlg .cta.buy:not(:disabled):hover{background:hsl(var(--buy)/.9)}.t-dlg .cta.sell:not(:disabled):hover{background:hsl(var(--sell)/.9)}
+.t-dlg .cta.sec:not(:disabled):hover{background:hsl(var(--button-hover))}
+.t-dlg .cta:not(.sec):not(.buy):not(.sell):not(:disabled):hover{background:hsl(var(--primary)/.9)}
+.t-dchk{transition-property:color;transition-duration:.15s;transition-timing-function:var(--ease-in-out)}
+.t-dsl .kn{transition:none}
+
+/* loading states, measured on the real page: chart = 48px spinner (4px orange bottom border, 1s linear) over the whole panel;
+   book = 21 rows x 3 pulsing bars (64/48/56 x 14, rgb(53,54,65), radius 6) in the real 3fr/3fr/4fr row grid */
+.t-chartload{position:absolute;inset:0;z-index:6;background:hsl(var(--card));display:grid;place-items:center;border-radius:6px}
+.t-spin{width:48px;height:48px;border-radius:9999px;border-bottom:4px solid hsl(var(--primary));animation:spin 1s linear infinite}
+.t-skrow{flex:1;min-height:20px;max-height:40px;display:grid;grid-template-columns:3fr 3fr 4fr;align-items:center;padding:4px 6px}
+.t-skb{height:14px;border-radius:6px;background:hsl(var(--button))}
+.t-row .bt,.t-row .bs{transition-property:clip-path;transition-duration:.15s;transition-timing-function:var(--ease-out-cubic)}
+
+.t-ch-ft>.t-ib:not(.t-tg){width:28px;margin-left:14px}
+
+.v2-lev{margin-top:12px;border:1px solid hsl(var(--button));border-radius:8px;padding:10px 12px}
+.v2-lev .hd{display:flex;justify-content:space-between;font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}.v2-lev .hd b{font:600 14px/16px var(--font);color:hsl(var(--foreground))}
+.v2-lev .chips{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.v2-lev .chips button{height:26px;padding:0 10px;border-radius:4px;background:hsl(var(--button));font:600 12px/12px var(--font);color:hsl(var(--muted-foreground))}
+.v2-lev .chips button.on{background:hsl(var(--phoenix)/.15);color:hsl(var(--phoenix));box-shadow:inset 0 0 0 1px hsl(var(--phoenix))}
+.v2-lev p{margin:8px 0 0;font:400 11px/15px var(--font);color:hsl(var(--muted-foreground))}
+.v2-risk{margin-top:16px;border-radius:8px;background:hsl(var(--card-light));padding:12px}
+.v2-risk .hd,.v2-risk .ft,.v2-risk .fund{display:flex;justify-content:space-between;align-items:center;font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.v2-risk .hd b{font:600 12px/16px var(--font)}.v2-risk .hd b.ok{color:hsl(var(--buy))}.v2-risk .hd b.mid{color:hsl(var(--phoenix))}.v2-risk .hd b.bad{color:hsl(var(--sell))}
+.v2-risk .bar{height:4px;border-radius:9999px;background:hsl(var(--button));margin:8px 0}
+.v2-risk .bar i{display:block;height:100%;border-radius:9999px;background:hsl(var(--muted-foreground));transition:width .3s ease}
+.v2-risk .bar i.ok{background:hsl(var(--buy))}.v2-risk .bar i.mid{background:hsl(var(--phoenix))}.v2-risk .bar i.bad{background:hsl(var(--sell))}
+.v2-risk .fund{margin-top:8px;padding-top:8px;border-top:1px solid hsl(var(--button)/.6)}.v2-risk .fund b{font:600 12px/16px var(--font)}.v2-risk .fund b.buy{color:hsl(var(--buy))}.v2-risk .fund b.sell{color:hsl(var(--sell))}
+em.mu{font-style:normal;color:hsl(var(--muted-foreground))}.v2-risk .mu{color:hsl(var(--muted-foreground))}
+
+.t-vrz{cursor:col-resize;width:14px!important;margin-right:-10px!important}
+.t-vrz:hover i{background:hsl(var(--phoenix))}
+.t-hrz:hover i{background:hsl(var(--phoenix))}
+
+/* v2 ticker: toggleable lists + per-list display value */
+.t-v2tog{display:flex;gap:4px;flex:none}
+.t-v2tog button{display:inline-flex;align-items:center;gap:5px;height:24px;padding:0 8px;border-radius:6px;font:600 12px/16px var(--font);color:hsl(var(--muted-foreground));white-space:nowrap}
+.t-v2tog button:hover{color:hsl(var(--foreground));background:hsl(var(--button)/.5)}
+.t-v2tog button.on{background:hsl(var(--button));color:hsl(var(--foreground))}.t-v2tog button.on svg{color:hsl(var(--phoenix))}
+.t-grp{display:flex;align-items:center;gap:6px;flex:none}
+.t-gsep{width:1px;height:20px;background:hsl(var(--button));margin:0 6px;flex:none}
+.t-gh{display:flex;align-items:center;gap:6px;flex:none;color:hsl(var(--muted-foreground));padding-left:2px}
+.t-gd{display:inline-flex;border-radius:6px;background:hsl(var(--card-light));padding:2px;gap:2px}
+.t-gd button{height:20px;min-width:24px;padding:0 6px;border-radius:4px;font:600 11px/16px var(--font);color:hsl(var(--muted-foreground))}
+.t-gd button:hover{color:hsl(var(--foreground))}.t-gd button.on{background:hsl(var(--button));color:hsl(var(--foreground))}
+
+.t-v2tog button:not(.on) .tl{display:none}.t-v2tog button:not(.on){padding:0 6px}
+button.t-gd{display:inline-flex;align-items:center;gap:2px;height:22px;padding:0 6px 0 8px;border-radius:6px;background:hsl(var(--card-light));font:600 11px/16px var(--font);color:hsl(var(--foreground));min-width:0}
+button.t-gd:hover{background:hsl(var(--button))}button.t-gd svg{color:hsl(var(--muted-foreground))}
+
+/* each list is its own lane: lanes share the width equally and scroll independently */
+.t-v2 .t-tscroll,.t-tick.v2 .t-tscroll{overflow:hidden;gap:0}
+.t-tick.v2 .t-grp{flex:1 1 0;min-width:0}
+.t-tick.v2 .t-gl{flex:1;min-width:0;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth}
+.t-tick.v2 .t-gl::-webkit-scrollbar{display:none}
+.t-tick.v2 .t-tchip{padding:0 6px;gap:5px}
+.t-tick.v2 .t-tchip svg{display:none}
+
+/* ---- v2 ticker, spacious pass: icon-only toggles, equal lanes split at the centre, per-lane controls float over the lane's right end ---- */
+.t-v2tog button .tl{display:none!important}
+.t-v2tog button,.t-v2tog button:not(.on){width:28px;height:28px;padding:0;justify-content:center;border-radius:8px}
+.t-v2tog{gap:2px}
+.t-tick.v2 .t-tsep{margin:0 10px}
+.t-tick.v2 .t-tscroll{gap:0}
+.t-tick.v2 .t-grp{position:relative;flex:1 1 0;min-width:0;gap:0}
+.t-tick.v2 .t-gsep{position:absolute;left:0;top:4px;bottom:4px;height:auto;margin:0}
+.t-tick.v2 .t-grp:not(:first-child) .t-gl{padding-left:14px}
+.t-tick.v2 .t-gl{padding-right:64px;gap:4px}
+.t-tick.v2 .t-gh{position:absolute;right:0;top:0;bottom:0;padding:0 2px 0 28px;gap:4px;background:linear-gradient(to right,transparent,hsl(var(--card)) 38%);pointer-events:none}
+.t-tick.v2 .t-gh>*{pointer-events:auto}
+.t-tick.v2 .t-gh>svg{opacity:.7}
+.t-tick.v2 .t-tarr{display:none}
+
+.t-tick.v2 .t-gh{padding-left:36px;background:linear-gradient(to right,transparent,hsl(var(--card)) 45%)}
+.t-tick.v2 button.t-gd{gap:4px;padding:0 6px;height:24px;border-radius:8px;box-shadow:0 0 0 1px hsl(var(--button)/.8)}
+.t-tick.v2 button.t-gd svg:first-child{color:hsl(var(--phoenix))}
+.t-tick.v2 .t-gl{padding-right:84px}
+
+/* ---- v2 ticker, sketch layout: lists + display options sit in a row ABOVE the strip; the strip holds only token chips ---- */
+.t-v2head{flex:none;height:32px;display:grid;grid-template-columns:1fr;align-items:center;padding:6px 8px 0}
+.t-v2head.two{grid-template-columns:1fr 1fr;column-gap:0}
+.t-v2head.two .t-vc:last-child{padding-left:9px}
+.t-vc{display:flex;align-items:center;gap:6px;min-width:0}
+.t-vsel{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 8px;border-radius:8px;background:hsl(var(--button));font:600 12px/16px var(--font);color:hsl(var(--foreground));white-space:nowrap}
+.t-vsel svg:first-child{color:hsl(var(--phoenix))}.t-vsel:hover{background:hsl(var(--button-hover))}
+.t-vd{display:inline-flex;gap:2px;padding:2px;border-radius:8px;background:hsl(var(--card-light))}
+.t-vd button{height:20px;min-width:28px;padding:0 6px;border-radius:6px;font:600 11px/16px var(--font);color:hsl(var(--muted-foreground))}
+.t-vd button:hover{color:hsl(var(--foreground))}.t-vd button.on{background:hsl(var(--button));color:hsl(var(--foreground))}
+.t-vadd{width:24px;height:24px;border-radius:8px;display:grid;place-items:center;color:hsl(var(--muted-foreground));box-shadow:inset 0 0 0 1px hsl(var(--button))}
+.t-vadd:hover{color:hsl(var(--foreground));background:hsl(var(--button)/.6)}
+.t-tick.v2.strip{padding:0 8px;gap:0;height:34px}
+.t-tick.v2.strip .t-gl{flex:1 1 0;min-width:0;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth;padding:0}
+.t-tick.v2.strip .t-gl::-webkit-scrollbar{display:none}
+.t-tick.v2.strip .t-tchip{padding:0 8px;gap:6px}.t-tick.v2.strip .t-tchip svg{display:none}
+.t-vmid{flex:none;width:1px;height:20px;background:hsl(var(--button));margin:0 8px}
+
+/* ---- v2 grid: an extra top row holds the list controls OUTSIDE the box ---- */
+main.t-grid.t-v2grid{grid-template-areas:"head book form" "stats book form" "chart book form" "pos pos form"}
+.t-v2grid>.t-v2head{grid-area:head;padding:0;height:auto;align-self:center}
+.t-v2grid .t-hrz{grid-row:3}.t-v2grid .t-vrz{grid-row:1/4}
+.t-v2head{display:grid;grid-template-columns:1fr;align-items:center}
+.t-v2head.two .t-vc:last-child{padding-left:9px}
+.t-vsel{height:28px;font-size:13px;padding:0 10px}.t-vd{padding:2px}.t-vd button{height:24px;font-size:12px;min-width:32px}.t-vadd{width:28px;height:28px}
+.t-tick.v2.strip{height:44px;padding:0 8px;touch-action:pan-x}
+.t-tick.v2.strip .t-gl{touch-action:pan-x;overscroll-behavior-x:contain;scroll-behavior:auto}
+.t-tick.v2.strip .t-tchip{height:36px;padding:0 10px;gap:8px;font:500 14px/20px var(--font)}
+.t-tick.v2.strip .t-tchip>.sy{font-weight:600;font-size:14px}.t-tick.v2.strip .t-tchip .v{font-size:14px;font-weight:500}
+
+/* ---- v2 strip polish: concentric pill chips with an even 4px inset, heavier fading separator ---- */
+.t-tick.v2.strip{padding:4px}
+.t-tick.v2.strip .t-gl{gap:2px}
+.t-tick.v2.strip .t-tchip{height:36px;border-radius:9999px;padding:0 14px 0 7px;gap:8px}
+.t-tick.v2.strip .t-tchip:hover{background:hsl(var(--button)/.55)}
+.t-tick.v2.strip .t-tchip.on,.t-tick.v2.strip .t-tchip.on:hover{background:hsl(var(--button));box-shadow:inset 0 0 0 1px hsl(var(--muted-foreground)/.22)}
+.t-vmid{width:2px;height:28px;margin:0 10px;border-radius:9999px;background:linear-gradient(to bottom,transparent,hsl(var(--muted-foreground)/.55) 22%,hsl(var(--muted-foreground)/.55) 78%,transparent)}
+
+/* v2 strip polish 2: equal, tighter padding; selected chip uses a faint Phoenix-orange tint (white 14:1, red 4.8:1, green 8.9:1) */
+.t-tick.v2.strip .t-tchip{padding:0 8px;gap:6px}
+.t-tick.v2.strip .t-tchip.on,.t-tick.v2.strip .t-tchip.on:hover{background:hsl(var(--phoenix)/.12);box-shadow:inset 0 0 0 1px hsl(var(--phoenix)/.4)}
+.t-tick.v2.strip .t-tchip:hover:not(.on){background:hsl(var(--foreground)/.07)}
+.t-tick.v2.strip .t-tchip svg{display:block}
+.t-tick.v2.strip .t-tchip .v{gap:3px}
+
+/* v2: two lanes share the width by a draggable divider (three thin lines, col-resize cursor) */
+.t-tick.v2.strip.two{display:grid;align-items:center}
+.t-tick.v2.strip.two .t-gl{min-width:0}
+.t-v2head.two{padding:0 4px}
+.t-v2head.two .t-vc:last-child{padding-left:0}
+.t-vc{width:max-content;max-width:none}
+.t-vmid{width:14px;height:100%;margin:0;display:flex;align-items:center;justify-content:center;gap:3px;background:none;border-radius:0;cursor:col-resize;touch-action:none}
+.t-vmid i{display:block;width:1px;height:20px;background:hsl(var(--button));transition:background .1s var(--ease-out)}
+.t-vmid:hover i,.t-vmid:active i{background:hsl(var(--muted-foreground))}
+
+.t-pop .lab{padding:6px 12px 2px;font:600 11px/16px var(--font);color:hsl(var(--muted-foreground));text-transform:none}
+
+/* ---- v2: one list = controls inside the box; two lists = controls rise above it. Row height + content animate. ---- */
+main.t-grid.t-v2grid{transition:grid-template-rows .2s cubic-bezier(.16,1,.3,1)}
+.t-v2grid>.t-v2head{overflow:hidden;min-height:0;opacity:0;transform:translateY(-6px);transition:opacity .2s ease,transform .2s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.t-v2grid>.t-v2head.two{opacity:1;transform:none;pointer-events:auto;overflow:visible}
+.t-tick.v2.strip{transition:grid-template-columns .2s cubic-bezier(.16,1,.3,1)}
+.t-tick.v2.strip>.t-vc{flex:none;padding:0 4px 0 2px;animation:vin .2s cubic-bezier(.16,1,.3,1)}
+.t-vin{flex:none;width:1px;height:20px;margin:0 8px 0 4px;background:hsl(var(--muted-foreground)/.35)}
+@keyframes vin{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.t-tick.v2.strip .t-vsel{height:36px;border-radius:9999px;background:transparent;box-shadow:inset 0 0 0 1px hsl(var(--button))}
+.t-tick.v2.strip .t-vsel:hover{background:hsl(var(--foreground)/.07)}
+.t-tick.v2.strip .t-vadd{width:36px;height:36px;border-radius:9999px}
+
+/* ---- v2 smoothness, measured from Backpack web: expo-out cubic-bezier(.16,1,.3,1) at 200ms for layout/transform/opacity, 150ms ease for colour, thin scrollbars, contained overscroll ---- */
+.t-v2grid button,.t-v2grid .t-tchip,.t-v2grid .t-row,.t-v2grid .t-trow{transition:color .15s cubic-bezier(.4,0,.2,1),background-color .15s cubic-bezier(.4,0,.2,1),border-color .15s cubic-bezier(.4,0,.2,1),box-shadow .15s cubic-bezier(.4,0,.2,1),opacity .2s cubic-bezier(.16,1,.3,1),transform .2s cubic-bezier(.16,1,.3,1)}
+.t-v2grid .t-tchip:active,.t-v2grid .t-vsel:active,.t-v2grid .t-vadd:active{transform:scale(.97)}
+.t-v2grid *{scrollbar-width:thin;scrollbar-color:hsl(var(--button)) transparent}
+.t-v2grid .t-lad,.t-v2grid .t-tl,.t-v2grid .t-gl{overscroll-behavior:contain}
+
+/* ---- scroll hints: shadow + chevron where more content hides (as on Backpack's stats bar) ---- */
+.t-sh{position:relative;flex:1 1 0;min-width:0;display:flex;align-items:center;align-self:stretch}
+.t-sh>.t-st,.t-sh>.t-gl{flex:1;min-width:0;margin:0;overflow-x:auto;scrollbar-width:none;overscroll-behavior-x:contain}
+.t-sh>.t-st::-webkit-scrollbar,.t-sh>.t-gl::-webkit-scrollbar{display:none}
+.t-mkt>.t-sh{margin-left:12px}
+.t-edge{position:absolute;top:0;bottom:0;width:44px;display:flex;align-items:center;color:hsl(var(--muted-foreground));opacity:0;pointer-events:none;z-index:2;transition:opacity .2s cubic-bezier(.16,1,.3,1),color .15s cubic-bezier(.4,0,.2,1)}
+.t-edge.r{right:0;justify-content:flex-end;padding-right:2px;background:linear-gradient(to right,transparent,hsl(var(--card)) 70%)}
+.t-edge.l{left:0;justify-content:flex-start;padding-left:2px;background:linear-gradient(to left,transparent,hsl(var(--card)) 70%)}
+.t-edge.on{opacity:1;pointer-events:auto}
+.t-edge:hover{color:hsl(var(--foreground))}
+.t-tick.v2.strip .t-edge{top:4px;bottom:4px;border-radius:9999px}
+
+/* scroll hints v2: full-height fade, bigger Phoenix triangle, content runs flush to both box edges */
+.t-edge{width:56px}
+.t-edge.r{padding-right:12px;background:linear-gradient(to right,transparent,hsl(var(--card)) 62%)}
+.t-edge.l{padding-left:12px;background:linear-gradient(to left,transparent,hsl(var(--card)) 62%)}
+.t-edge:hover{background-color:transparent}
+.t-tick.v2.strip .t-edge{top:0;bottom:0;border-radius:0}
+.t-tick.v2.strip{padding:0}
+.t-tick.v2.strip .t-gl{padding:4px 0}
+.t-tick.v2.strip .t-gl>:first-child{margin-left:4px}
+.t-tick.v2.strip>.t-vc{padding-left:8px}
+.t-tick.v2.strip .t-vmid{margin:0;width:auto;justify-self:stretch}
+.t-tick.v2.strip .t-vmid i{background:hsl(var(--muted-foreground)/.35)}
+
+/* ---- v2: the list strip is its own panel; the market stats row and the chart are ONE panel ---- */
+main.t-grid.t-v2grid{grid-template-areas:"head head head" "tick tick tick" "merge book form" "pos pos form"}
+.t-v2grid>.t-tkp{grid-area:tick;overflow:visible;display:flex;min-height:0}
+.t-v2grid>.t-tkp>.t-tick{flex:1;border-bottom:0;height:auto;min-width:0}
+.t-v2grid>.t-merge{grid-area:merge;display:flex;flex-direction:column;overflow:visible;position:relative}
+.t-merge>.t-mst{flex:none;height:62px;display:flex;border-bottom:1px solid hsl(var(--border)/.7)}
+.t-merge>.t-chart{flex:1;min-height:0;background:none;border:0;border-radius:0}
+.t-merge>.t-chart.fs{background:hsl(var(--card));border:1px solid hsl(var(--border));border-radius:6px}
+.t-v2grid .t-hrz{grid-row:3}.t-v2grid .t-vrz{grid-row:3}
+
+/* compact list badges above the strip; divider column hugs the exact centre of the full-width box */
+.t-v2grid>.t-v2head{align-self:end}
+.t-v2head .t-vsel{height:22px;font-size:12px;line-height:16px;padding:0 8px;gap:5px;border-radius:7px}
+.t-v2head .t-vsel svg{width:12px;height:12px}
+.t-v2head.two .t-vc:last-child{padding-left:0}
+.t-tick.v2.strip .t-vmid i{height:24px}
+
+/* v2 alignment: with one list the (empty) head row must not push the strip below the order book's top edge; with two, badges sit on the top edge */
+.t-v2grid>.t-tkp{transition:margin-top .2s cubic-bezier(.16,1,.3,1)}
+.t-v2grid.one>.t-tkp{margin-top:-6px}
+.t-v2grid>.t-v2head{align-self:start}
+
+/* ---- v2 views: book column hidden -> chart area spans both; stacked / side-by-side book + trade list ---- */
+main.t-grid.t-v2grid.nb>.t-merge{grid-column:1/3}
+/* S1 (Most Active strip) always spans the full width, above the book and the order form */
+main.t-grid.t-v2grid>.t-tkp,main.t-grid.t-v2grid>.t-v2head{grid-column:1/-1}
+.t-v2grid .t-row .bt,.t-v2grid .t-row .bs{transition:none}
+.t-vw{position:absolute;top:17px;right:10px;z-index:8}
+.t-vwb{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:hsl(var(--muted-foreground));box-shadow:inset 0 0 0 1px hsl(var(--button))}
+.t-vwb:hover,.t-vwb.on{color:hsl(var(--foreground));background:hsl(var(--button)/.6)}
+.t-merge>.t-mst{padding-right:48px}
+.t-pop .it.vw{height:auto;padding:8px 10px;gap:12px}
+.t-pop .it.vw .tx{display:flex;flex-direction:column;gap:2px;min-width:0}.t-pop .it.vw b{font-weight:600;font-size:13px;line-height:16px}.t-pop .it.vw small{font-size:11px;line-height:14px;color:hsl(var(--muted-foreground))}
+.t-pop .it.vw svg:first-child{flex:none;color:hsl(var(--muted-foreground))}
+.t-alt{flex:1;min-height:0;display:flex}
+.t-alt>.t-book{flex:1;min-width:0;grid-area:auto;border:0;background:none;border-radius:0}
+.t-book .t-sec{display:flex;flex-direction:column;min-height:0;flex:1.5}.t-book .t-sec.t{flex:1;margin-top:6px;border-top:1px solid hsl(var(--button)/.3);padding-top:6px}
+.t-book .t-sect{flex:none;font:600 13px/20px var(--font);padding:2px 0 6px}
+.t-book .t-sidebs{flex:1;min-height:0;display:flex;gap:12px}.t-book .t-sidebs>.t-sec{flex:1;min-width:0;margin:0;border:0;padding:0}
+.t-book.m-trades .t-sec{flex:1;margin:0;border:0;padding:0}
+.t-alt>.t-book{padding:6px 16px 0}.t-alt .t-lad,.t-alt .t-tl{margin:0 -16px}
+.t-mst>.t-mkt,.t-mst .t-sh{min-width:0}.t-mst>.t-mkt{flex:1 1 0}
+
+/* centre the row-resize dots over the two left columns only (chart + book), not the order form */
+.t-v2grid .t-hrz{grid-column:1/3}
+/* view button: no border, square corners, same height as the stats text block, centred in the 62px stats row */
+.t-vw{top:13px;right:6px}
+.t-vwb{width:36px;height:36px;border-radius:0;box-shadow:none}
+.t-vwb svg{width:20px;height:20px}
+.t-vwb:hover,.t-vwb.on{background:hsl(var(--button)/.6)}
+.t-merge>.t-mst{padding-right:48px}
+
+/* ---- v2: side-by-side book + trade list: two clean columns with a hairline between, rows share one height so they line up ---- */
+.t-book.m-side{padding:8px 0 0}
+.t-book .t-sidebs{gap:0}
+.t-book .t-sidebs>.t-sec{padding:0 16px}
+.t-book .t-sidebs>.t-sec.t{border-left:1px solid hsl(var(--button)/.5);margin-top:0}
+.t-book .t-sidebs .t-lad,.t-book .t-sidebs .t-tl{margin:0}
+.t-book .t-sidebs .t-sect{padding-top:0}
+.t-spc{flex:none;height:32px}
+.t-book.m-side .t-trow{height:var(--rh,24px);padding:0 6px}
+.t-book.m-side .t-bhd{padding:0 6px}
+.t-book.m-side .t-bctl{margin-bottom:8px}
+
+/* ---- v2: menu rows never touch, so a highlighted row and the one below it can't merge into one block ---- */
+html[data-v2] .t-pop{display:flex;flex-direction:column;gap:2px}
+html[data-v2] .t-pop hr{margin:4px 0}
+html[data-v2] .sx-menu,html[data-v2] .dx-menu{display:flex;flex-direction:column;gap:2px}
+html[data-v2] .pp-selmenu{display:flex;flex-direction:column;gap:2px}
+
+/* ---- v2 control panel (order form), Backpack-style: % chips, summary up top, dotted leverage slider, TP/SL tiles ---- */
+.v2-pct{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.v2-pct button{height:28px;border-radius:6px;background:hsl(var(--button));font:600 12px/16px var(--font);color:hsl(var(--muted-foreground));transition:background-color .15s,color .15s,box-shadow .15s}
+.v2-pct button:hover:not(:disabled){color:hsl(var(--foreground));background:hsl(var(--button-hover))}
+.v2-pct button.on{color:hsl(var(--phoenix));background:hsl(var(--phoenix)/.12);box-shadow:inset 0 0 0 1px hsl(var(--phoenix)/.55)}
+.v2-pct button:disabled{opacity:.5;cursor:not-allowed}
+.t-form .t-slrow{margin-top:12px}
+.v2-sum{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.v2-sum .warn{font:500 12px/16px var(--font);color:hsl(var(--phoenix))}
+.v2-sum .two{display:grid;grid-template-columns:1fr 1fr;border:1px dashed hsl(var(--button));border-radius:8px}
+.v2-sum .two>div{display:flex;flex-direction:column;gap:2px;padding:8px 12px}.v2-sum .two>div+div{border-left:1px dashed hsl(var(--button))}
+.v2-sum .two span,.v2-sum .big span{font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.v2-sum .two b{font:600 13px/18px var(--font);color:hsl(var(--foreground))}.v2-sum em{font-style:normal;font-weight:400;color:hsl(var(--muted-foreground));font-size:12px}
+.v2-sum .big{display:flex;justify-content:space-between;align-items:baseline;padding:0 2px}
+.v2-sum .big b{font:600 18px/24px var(--font);color:hsl(var(--foreground));display:flex;align-items:baseline;gap:8px}
+.v2-sum .big em.free{color:hsl(var(--buy));font-weight:600;font-size:14px}
+.v2-lev2{margin-top:16px}
+.v2-lev2 .hd{display:flex;justify-content:space-between;align-items:baseline;font:400 12px/16px var(--font);color:hsl(var(--muted-foreground));margin-bottom:6px}
+.v2-lev2 .hd b{font:600 16px/20px var(--font);color:hsl(var(--foreground))}
+.v2-lev2 .t-sl{margin:0 7px;flex:none;width:calc(100% - 14px)}
+.v2-lev2 .tk{position:relative;height:16px;margin:0 7px}
+.v2-lev2 .tk span{position:absolute;top:0;transform:translateX(-50%);font:500 11px/16px var(--font);color:hsl(var(--muted-foreground))}
+.v2-lev2 .tk span:first-child{transform:translateX(-7px)}.v2-lev2 .tk span:last-child{transform:translateX(calc(-100% + 7px))}
+.v2-lev2 .tk span.on{color:hsl(var(--phoenix));font-weight:600}
+.v2-lev2 .t-sl .kn{background:hsl(var(--phoenix))}.v2-lev2 .t-sl .fl{background:hsl(var(--phoenix)/.8)}
+.v2-lev2 .t-sl .kn{transition:left .12s cubic-bezier(.16,1,.3,1)}.v2-lev2 .t-sl .fl{transition:width .12s cubic-bezier(.16,1,.3,1)}
+.v2-lev2 p{margin:8px 0 0;font:400 11px/15px var(--font);color:hsl(var(--muted-foreground))}
+.v2-tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.v2-tiles>div{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:8px}
+.v2-tiles .g{background:hsl(var(--buy)/.1);box-shadow:inset 0 0 0 1px hsl(var(--buy)/.25)}.v2-tiles .r{background:hsl(var(--sell)/.1);box-shadow:inset 0 0 0 1px hsl(var(--sell)/.25)}
+.v2-tiles span{font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.v2-tiles b{font:600 14px/20px var(--font);color:hsl(var(--foreground))}
+.v2-tiles em{font-style:normal;font:400 11px/14px var(--font)}.v2-tiles .g em{color:hsl(var(--buy))}.v2-tiles .r em{color:hsl(var(--sell))}
+.t-osz .t-slrow>.t-sl:only-child{margin:0 7px}
+
+/* ---- v2 order form: more air between sections and inside boxes ---- */
+html[data-v2] .t-form .t-fscroll{padding-bottom:12px}
+html[data-v2] .t-form .t-side2{margin-top:16px}
+html[data-v2] .t-form .t-kv{margin-top:22px;height:28px}
+html[data-v2] .t-form .t-kv+.t-kv{margin-top:2px}
+html[data-v2] .t-form .t-osz{margin-top:24px;padding:16px 16px 18px}
+html[data-v2] .t-form .t-slrow{margin-top:20px}
+html[data-v2] .v2-pct{margin-top:18px;gap:8px}
+html[data-v2] .v2-pct button{height:32px}
+html[data-v2] .v2-sum{margin-top:28px;gap:18px}
+html[data-v2] .v2-sum .two>div{padding:12px 14px;gap:4px}
+html[data-v2] .v2-sum .big{padding:0 4px}
+html[data-v2] .v2-lev2{margin-top:32px}
+html[data-v2] .v2-lev2 .hd{margin-bottom:12px}
+html[data-v2] .v2-lev2 .tk{margin-top:6px}
+html[data-v2] .v2-lev2 p{margin-top:14px}
+html[data-v2] .t-form .t-chk{margin-top:30px}
+html[data-v2] .t-form .t-chk+.t-chk{margin-top:22px}
+html[data-v2] .t-form .t-tpsl{margin-top:18px;gap:10px}
+html[data-v2] .v2-tiles{margin-top:16px;gap:10px}
+html[data-v2] .v2-tiles>div{padding:14px;gap:4px}
+html[data-v2] .v2-risk{margin-top:28px;padding:16px}
+html[data-v2] .v2-risk .bar{margin:12px 0}
+html[data-v2] .v2-risk .fund{margin-top:12px;padding-top:12px}
+html[data-v2] .t-form .t-fbtn{margin-top:28px}
+html[data-v2] .t-form .t-sum{margin-top:28px;padding:16px;gap:12px}
+
+/* ---- v2 order form v3: header (tabs, side) and footer (risk, Place Order) are pinned; only the middle can scroll, and at normal heights it doesn't need to ---- */
+html[data-v2] .t-form{display:flex;flex-direction:column}
+html[data-v2] .t-fhead{flex:none}
+html[data-v2] .t-ffoot{flex:none;padding-top:10px}
+html[data-v2] .t-form .t-ftabs{margin-bottom:0}
+html[data-v2] .t-form .t-side2{margin-top:10px}
+html[data-v2] .t-form .t-kv{margin-top:12px;height:20px}
+html[data-v2] .t-form .t-kv+.t-kv{margin-top:0}
+html[data-v2] .t-form .t-osz{margin-top:12px;padding:12px 14px 14px}
+html[data-v2] .t-form .t-slrow{margin-top:10px}
+html[data-v2] .v2-pct{margin-top:10px;gap:6px}
+html[data-v2] .v2-pct button{height:26px}
+html[data-v2] .v2-sum{margin-top:14px;gap:8px}
+html[data-v2] .v2-sum .two>div{padding:7px 12px;gap:1px}
+html[data-v2] .v2-sum .big b{font-size:16px;line-height:20px}
+html[data-v2] .v2-lev2{margin-top:14px}
+html[data-v2] .v2-lev2 .hd{margin-bottom:6px}
+html[data-v2] .v2-lev2 .tk{margin-top:2px}
+html[data-v2] .v2-lev2 p{display:none}
+.v2-chks{display:flex;gap:18px;align-items:center}
+html[data-v2] .v2-chks .t-chk{margin-top:14px;width:auto;padding-left:2px}
+html[data-v2] .v2-chks .t-chk+.t-chk{margin-top:14px}
+html[data-v2] .t-form .t-tpsl{margin-top:10px;gap:8px}
+html[data-v2] .v2-tiles{margin-top:10px;gap:8px}
+html[data-v2] .v2-tiles>div{padding:8px 12px;gap:2px}
+html[data-v2] .t-ffoot .v2-risk{margin-top:0;padding:10px 12px}
+html[data-v2] .t-ffoot .v2-risk .bar{margin:8px 0}
+html[data-v2] .t-ffoot .v2-risk .ft{display:none}
+html[data-v2] .t-ffoot .v2-risk .fund{margin-top:0;padding-top:8px}
+html[data-v2] .t-ffoot .t-fbtn{margin-top:10px}
+html[data-v2] .t-ffoot .t-sum{margin-top:8px;padding:0 4px;background:none;gap:2px}
+html[data-v2] .t-ffoot .t-sum .r{height:18px}
+html[data-v2] .t-form .t-kv:first-of-type{margin-top:8px}
+html[data-v2] .t-form .t-osz{margin-top:10px;padding:12px 14px 12px}
+html[data-v2] .v2-sum{margin-top:12px}
+html[data-v2] .v2-lev2{margin-top:12px}
+html[data-v2] .v2-chks .t-chk{margin-top:10px}
+html[data-v2] .t-form .t-fscroll{padding-bottom:4px}
+
+/* ---- v2 order ticket v4 (Jupiter / Backpack style): one size card with % chips + leverage inside, a clean detail list, risk as a badge ---- */
+html[data-v2] .t-form .t-osz{margin-top:10px;padding:14px;border-radius:12px;background:hsl(var(--card-light))}
+html[data-v2] .v2-pct{margin-top:14px;gap:6px}
+html[data-v2] .v2-pct button{height:28px;border-radius:8px}
+html[data-v2] .t-osz .v2-lev2{margin-top:14px;padding-top:14px;border-top:1px solid hsl(var(--border)/.8)}
+html[data-v2] .t-osz .v2-lev2 .hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+html[data-v2] .t-osz .v2-lev2 .hd b{margin-left:auto}
+.v2-badge{font-style:normal;font:600 11px/16px var(--font);padding:1px 8px;border-radius:9999px}
+.v2-badge.ok{color:hsl(var(--buy));background:hsl(var(--buy)/.14)}
+.v2-badge.mid{color:hsl(var(--phoenix));background:hsl(var(--phoenix)/.16)}
+.v2-badge.bad{color:hsl(var(--sell));background:hsl(var(--sell)/.16)}
+html[data-v2] .v2-sum{margin-top:12px;gap:0;padding:2px 2px}
+.v2-sum .row{display:flex;justify-content:space-between;align-items:center;height:26px;padding:0 12px;border-radius:8px}
+.v2-sum .row:nth-child(even){background:hsl(var(--card-light)/.55)}
+.v2-sum .row span{font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.v2-sum .row b{font:600 12px/16px var(--font);color:hsl(var(--foreground));display:flex;align-items:baseline;gap:6px}
+.v2-sum .row b.buy{color:hsl(var(--buy))}.v2-sum .row b.sell{color:hsl(var(--sell))}
+.v2-sum .row em{font-style:normal;font-weight:400;font-size:11px;color:hsl(var(--muted-foreground))}.v2-sum .row em.free{color:hsl(var(--buy));font-weight:600;font-size:12px}
+.v2-sum .warn{padding:0 12px 6px;font:500 12px/16px var(--font);color:hsl(var(--phoenix))}
+
+/* ---- v2 take profit / stop loss: sheet in the form + draggable pills on the chart ---- */
+.v2-tps{display:flex;flex-direction:column;gap:12px;padding-top:12px}
+.v2-tps .hd{display:flex;justify-content:space-between;align-items:center}
+.v2-tps .hd b{font:600 14px/20px var(--font);color:hsl(var(--foreground))}
+.v2-tps .done{height:28px;padding:0 14px;border-radius:8px;background:hsl(var(--phoenix));color:#000;font:600 12px/16px var(--font)}
+.v2-tps .done:hover{background:hsl(var(--phoenix)/.88)}
+.v2-tps .lv{border-radius:12px;background:hsl(var(--card-light));padding:12px 14px 12px;display:flex;flex-direction:column;gap:10px}
+.v2-tps .lv .top{display:flex;align-items:center;gap:8px;font:600 13px/18px var(--font);color:hsl(var(--foreground))}
+.v2-tps .lv .dt{width:8px;height:8px;border-radius:9999px}.v2-tps .lv.g .dt{background:hsl(var(--buy))}.v2-tps .lv.r .dt{background:hsl(var(--sell))}
+.v2-tps .lv .top em{margin-left:auto;font-style:normal;font:600 13px/18px var(--font)}.v2-tps .lv .top em small{font:400 11px/16px var(--font)}
+.v2-tps .lv.g .top em{color:hsl(var(--buy))}.v2-tps .lv.r .top em{color:hsl(var(--sell))}
+.v2-tps .lv .top em:not(:has(small)){color:hsl(var(--muted-foreground));font-weight:400}
+.v2-tps .lv .x{width:20px;height:20px;border-radius:9999px;display:grid;place-items:center;color:hsl(var(--muted-foreground))}.v2-tps .lv .x:hover{background:hsl(var(--button));color:hsl(var(--foreground))}
+.v2-tps .inp{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.v2-tps .inp label{display:flex;align-items:center;gap:6px;height:34px;padding:0 10px;border-radius:8px;background:hsl(var(--background)/.5);box-shadow:inset 0 0 0 1px hsl(var(--button));transition:box-shadow .15s}
+.v2-tps .inp label:focus-within{box-shadow:inset 0 0 0 1px hsl(var(--phoenix))}
+.v2-tps .inp label span{font:400 11px/16px var(--font);color:hsl(var(--muted-foreground));flex:none}.v2-tps .inp label i{font-style:normal;color:hsl(var(--muted-foreground));font-size:13px}
+.v2-tps .inp input{flex:1;min-width:0;width:100%;background:none;border:0;outline:0;text-align:right;font:600 13px/18px var(--font);color:hsl(var(--foreground))}
+.v2-tps .inp label button{flex:none;width:22px;height:22px;border-radius:6px;background:hsl(var(--button));font:600 11px/16px var(--font);color:hsl(var(--foreground))}
+.v2-tps .t-sl{margin:2px 7px 0;flex:none;width:calc(100% - 14px)}
+.v2-tps .t-sl.g .kn{background:hsl(var(--buy))}.v2-tps .t-sl.g .fl{background:hsl(var(--buy)/.8)}
+.v2-tps .t-sl.r .kn{background:hsl(var(--sell))}.v2-tps .t-sl.r .fl{background:hsl(var(--sell)/.8)}
+.v2-tps .tk{display:flex;justify-content:space-between;margin:-6px 0 0;font:500 10px/14px var(--font);color:hsl(var(--muted-foreground))}
+.v2-tps .chips{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.v2-tps .chips button{height:26px;border-radius:8px;background:hsl(var(--button));font:600 11px/16px var(--font);color:hsl(var(--muted-foreground));transition:background-color .15s,color .15s}
+.v2-tps .chips button:hover{color:hsl(var(--foreground))}
+.v2-tps .lv.g .chips button.on{background:hsl(var(--buy)/.14);color:hsl(var(--buy));box-shadow:inset 0 0 0 1px hsl(var(--buy)/.5)}
+.v2-tps .lv.r .chips button.on{background:hsl(var(--sell)/.14);color:hsl(var(--sell));box-shadow:inset 0 0 0 1px hsl(var(--sell)/.5)}
+.v2-tps p{margin:0;font:400 11px/15px var(--font);color:hsl(var(--muted-foreground))}
+.v2-tpsum{display:flex;align-items:center;gap:10px;width:100%;margin-top:10px;padding:8px 12px;border-radius:10px;background:hsl(var(--card-light));font:600 12px/16px var(--font);text-align:left;flex-wrap:wrap}
+.v2-tpsum .g{color:hsl(var(--buy))}.v2-tpsum .r{color:hsl(var(--sell))}.v2-tpsum em{font-style:normal;font-weight:400;opacity:.85}
+.v2-tpsum .mu{color:hsl(var(--muted-foreground));font-weight:400}.v2-tpsum svg{margin-left:auto;color:hsl(var(--muted-foreground))}
+.v2-tpsum:hover svg{color:hsl(var(--foreground))}
+.t-tpill{position:absolute;left:70px;height:22px;display:flex;align-items:center;gap:6px;padding:0 6px 0 4px;border-radius:6px;background:hsl(var(--card));border:1px solid;font:600 11px/16px var(--font);cursor:ns-resize;touch-action:none;user-select:none;z-index:6;box-shadow:0 2px 8px rgba(0,0,0,.5);transition:box-shadow .15s}
+.t-tpill.g{border-color:hsl(var(--buy));color:hsl(var(--buy))}.t-tpill.r{border-color:hsl(var(--sell));color:hsl(var(--sell))}
+.t-tpill:active{box-shadow:0 4px 14px rgba(0,0,0,.7)}
+.t-tpill .grip{width:6px;height:12px;background:radial-gradient(circle,currentColor 1px,transparent 1.3px) 0 0/6px 4px;opacity:.7}
+.t-tpill b{font-weight:600}.t-tpill button{width:16px;height:16px;border-radius:9999px;font-size:9px;line-height:16px;color:inherit;opacity:.7}.t-tpill button:hover{opacity:1;background:hsl(var(--button))}
+
+/* ---- v2 TP/SL bottom sheet (rises inside the order panel; nothing else moves) ---- */
+.v2-scrim{position:absolute;inset:0;z-index:58;background:rgba(0,0,0,.5);border-radius:10px;animation:scrimIn .2s ease both}
+.v2-scrim[data-state=closed]{animation:scrimOut .15s ease both}
+.v2-tpsheet{position:absolute;left:0;right:0;bottom:0;z-index:60;background:hsl(var(--card));border:1px solid hsl(var(--border));border-bottom:0;border-radius:16px 16px 10px 10px;padding:14px 14px 14px;box-shadow:0 -16px 40px rgba(0,0,0,.6);animation:sheetUp .3s cubic-bezier(.16,1,.3,1) both}
+.v2-tpsheet[data-state=closed]{animation:sheetDown .16s cubic-bezier(.4,0,1,1) both}
+.v2-tpsheet::before{content:"";display:block;width:36px;height:4px;border-radius:9999px;background:hsl(var(--muted-foreground)/.4);margin:-6px auto 10px}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}@keyframes sheetDown{to{transform:translateY(100%)}}
+@keyframes scrimIn{from{opacity:0}to{opacity:1}}@keyframes scrimOut{to{opacity:0}}
+.v2-tpsheet .v2-tps{padding-top:0;gap:10px}
+.v2-tpsheet .v2-tps .lv{background:hsl(var(--card-light));padding:12px;gap:8px}
+/* drag bar: tick lines + pill handle with grip lines */
+.v2-tps .t-sl{height:28px;margin:0 9px;width:calc(100% - 18px)}
+.v2-tps .t-sl .tr{top:12px;height:4px}.v2-tps .t-sl .fl{top:12px;height:4px}
+.v2-tps .t-sl .st{top:8px;width:2px;height:12px;border-radius:1px;background:hsl(var(--muted-foreground)/.45)}
+.v2-tps .t-sl .kn{top:3px;width:18px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;gap:3px;box-shadow:0 2px 6px rgba(0,0,0,.5);transition:transform .12s cubic-bezier(.16,1,.3,1)}
+.v2-tps .t-sl:active .kn{transform:translateX(-50%) scale(1.08)}
+.v2-tps .t-sl .kn i{width:2px;height:10px;border-radius:1px;background:rgba(0,0,0,.45)}
+.v2-tps .tks{position:relative;height:16px;margin:0 9px}
+.v2-tps .tks button{position:absolute;top:0;transform:translateX(-50%);font:500 11px/16px var(--font);color:hsl(var(--muted-foreground));padding:0 2px;transition:color .15s}
+.v2-tps .tks button:first-child{transform:translateX(-9px)}.v2-tps .tks button:last-child{transform:translateX(calc(-100% + 9px))}
+.v2-tps .tks button:hover{color:hsl(var(--foreground))}
+.v2-tps .lv.g .tks button.on{color:hsl(var(--buy));font-weight:600}.v2-tps .lv.r .tks button.on{color:hsl(var(--sell));font-weight:600}
+
+/* ---- v2: the set take profit / stop loss, as a proper box with an edit button ---- */
+.v2-tpbox{margin-top:12px;border-radius:12px;background:hsl(var(--card-light));box-shadow:inset 0 0 0 1px hsl(var(--button));overflow:hidden}
+.v2-tpbox .hd{display:flex;justify-content:space-between;align-items:center;padding:8px 8px 8px 12px;border-bottom:1px solid hsl(var(--button)/.7);font:600 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.v2-tpbox .hd button{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;color:hsl(var(--phoenix));background:hsl(var(--phoenix)/.1);transition:background-color .15s,color .15s}
+.v2-tpbox .hd button:hover{background:hsl(var(--phoenix)/.2)}
+.v2-tpbox .cells{display:grid;grid-template-columns:1fr 1fr}
+.v2-tpbox .c{display:flex;flex-direction:column;gap:2px;padding:10px 12px}.v2-tpbox .c+.c{border-left:1px solid hsl(var(--button)/.7)}
+.v2-tpbox .lb{display:flex;align-items:center;gap:6px;font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.v2-tpbox .lb i{width:7px;height:7px;border-radius:9999px}.v2-tpbox .g .lb i{background:hsl(var(--buy))}.v2-tpbox .r .lb i{background:hsl(var(--sell))}
+.v2-tpbox b{font:600 15px/20px var(--font);color:hsl(var(--foreground))}
+.v2-tpbox .c.off b{color:hsl(var(--muted-foreground));font-weight:500}
+.v2-tpbox em{font-style:normal;font:500 11px/14px var(--font)}.v2-tpbox .g em{color:hsl(var(--buy))}.v2-tpbox .r em{color:hsl(var(--sell))}.v2-tpbox .off em{color:hsl(var(--muted-foreground))}
+
+/* compact TP/SL box: one row, edit button on the right */
+.v2-tpbox{display:grid;grid-template-columns:1fr 1fr 40px;align-items:stretch;margin-top:8px;overflow:hidden}
+.v2-tpbox .hd,.v2-tpbox .cells{display:none}
+.v2-tpbox .c{padding:7px 12px;gap:1px;justify-content:center}
+.v2-tpbox .c+.c{border-left:1px solid hsl(var(--button)/.7)}
+.v2-tpbox .lb{gap:6px;font:600 11px/16px var(--font)}
+.v2-tpbox .lb b{font:600 13px/16px var(--font);margin-left:2px}
+.v2-tpbox>button{border-left:1px solid hsl(var(--button)/.7);display:grid;place-items:center;color:hsl(var(--phoenix));transition:background-color .15s}
+.v2-tpbox>button:hover{background:hsl(var(--phoenix)/.12)}
+.v2-sum .row b span.sell{color:hsl(var(--sell));font-weight:600;font-size:12px}.v2-sum .row b span.buy{color:hsl(var(--buy));font-weight:600;font-size:12px}
+.v2-sum .row b em{margin:0 2px;opacity:.6}
+html[data-v2] .v2-sum .row{height:24px}
+html[data-v2] .v2-chks .t-chk{margin-top:8px}
+
+/* TP/SL: two separate small-radius boxes; one edit button at the top right of the row above both */
+.v2-tpbox{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;background:none;box-shadow:none;border-radius:0;overflow:visible}
+.v2-tpbox .c{padding:8px 10px;gap:2px;justify-content:flex-start;border-radius:6px;background:hsl(var(--card-light));box-shadow:inset 0 0 0 1px hsl(var(--button));border:0}
+.v2-tpbox .c+.c{border-left:0}
+.v2-tpbox .lb{display:flex;align-items:baseline;justify-content:space-between;gap:6px;font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.v2-tpbox .lb i{display:none}
+.v2-tpbox .lb b{font:600 13px/16px var(--font);color:hsl(var(--foreground));margin:0}
+.v2-tpbox em{font:500 11px/14px var(--font)}
+.v2-tpedit{margin-left:auto;margin-top:8px;width:26px;height:26px;border-radius:6px;display:grid;place-items:center;color:hsl(var(--phoenix));background:hsl(var(--phoenix)/.1);transition:background-color .15s}
+.v2-tpedit:hover{background:hsl(var(--phoenix)/.22)}
+html[data-v2] .v2-chks{align-items:center}
+.v2-tpbox .lb{align-items:center;height:20px;white-space:nowrap}
+.v2-tpbox .lb b{line-height:20px}
+html[data-v2] .v2-chks{gap:10px;flex-wrap:nowrap}
+html[data-v2] .v2-chks .t-chk{white-space:nowrap;flex:none;gap:6px;padding-left:0}
+.v2-tpedit{flex:none}
+.v2-tpbox .lb .t{font:400 12px/20px var(--font);color:hsl(var(--muted-foreground));display:block}
+.v2-tpbox .c em{display:block}
+.v2-tpbox .lb{padding:0;margin:0}
+
+/* TP/SL: smaller boxes + smaller edit button */
+.v2-tpedit{width:22px;height:22px;border-radius:6px;margin-top:6px}
+.v2-tpbox{margin-top:6px;gap:6px}
+.v2-tpbox .c{padding:5px 9px;gap:0}
+.v2-tpbox .lb{height:16px}
+.v2-tpbox .lb .t{font:400 11px/16px var(--font)}
+.v2-tpbox .lb b{font:600 12px/16px var(--font)}
+.v2-tpbox .c em{font:500 11px/14px var(--font)}
+
+/* TP/SL boxes: stacked label / price / result, left-aligned; edit button centred on the checkbox row */
+html[data-v2] .v2-chks{margin-top:10px;align-items:center}
+html[data-v2] .v2-chks .t-chk{margin-top:0}
+html[data-v2] .v2-chks .v2-tpedit{margin:0}
+.v2-tpbox{margin-top:8px;gap:8px}
+.v2-tpbox .c{padding:10px 12px;gap:3px;align-items:flex-start;justify-content:flex-start}
+.v2-tpbox .c .t{font:400 12px/16px var(--font);color:hsl(var(--muted-foreground));display:block}
+.v2-tpbox .c b{font:600 16px/20px var(--font);color:hsl(var(--foreground));margin:0;display:block}
+.v2-tpbox .c em{font:500 12px/16px var(--font);display:block}
+html[data-v2] .v2-chks .t-chk+.t-chk{margin-top:0}
+html[data-v2] .v2-chks .v2-tpedit{margin:0 0 0 auto}
+
+/* final numbers under Place Order: larger and heavier */
+html[data-v2] .t-ffoot .t-sum{margin-top:10px;gap:3px;padding:0 4px}
+html[data-v2] .t-ffoot .t-sum .r{height:24px;font:400 14px/20px var(--font)}
+html[data-v2] .t-ffoot .t-sum .r b{font:600 15px/20px var(--font)}
+html[data-v2] .t-ffoot .t-sum .r b .ed svg{width:15px;height:15px}
+
+/* ---- v2: compact limit price row ---- */
+.v2-lim{display:flex;align-items:center;gap:10px;height:44px;margin-top:10px;padding:0 8px 0 14px;border-radius:10px;background:hsl(var(--card-light));cursor:text;transition:box-shadow .15s}
+.v2-lim:focus-within{box-shadow:inset 0 0 0 1px hsl(var(--phoenix))}
+.v2-lim>span:first-child{font:400 12px/16px var(--font);color:hsl(var(--muted-foreground));flex:none}
+.v2-lim .in{flex:1;min-width:0;display:flex;align-items:center;justify-content:flex-end;gap:4px}
+.v2-lim .in i{font-style:normal;font:500 16px/24px var(--font);color:hsl(var(--muted-foreground))}
+.v2-lim .in input{width:100%;min-width:0;background:none;border:0;outline:0;text-align:right;font:500 18px/24px var(--font);color:hsl(var(--foreground));caret-color:hsl(var(--phoenix))}
+.v2-lim .in input::placeholder{color:hsl(var(--muted-foreground)/.7)}
+.v2-lim button{flex:none;height:28px;padding:0 10px;border-radius:7px;background:hsl(var(--button));font:600 12px/16px var(--font);color:hsl(var(--muted-foreground));transition:background-color .15s,color .15s}
+.v2-lim button:hover{color:hsl(var(--foreground));background:hsl(var(--button-hover))}
+
+/* ---- v2: leverage slider with big round stops: pale until reached, then Phoenix orange; big white handle ---- */
+.v2-lev2 .t-sl{height:28px;margin:0 11px;width:calc(100% - 22px)}
+.v2-lev2 .t-sl .tr{top:12px;height:4px;background:hsl(var(--button))}
+.v2-lev2 .t-sl .fl{top:12px;height:4px;background:hsl(var(--phoenix))}
+.v2-lev2 .t-sl .st{top:7px;width:14px;height:14px;border-radius:50%;background:hsl(var(--background));box-shadow:inset 0 0 0 2px hsl(var(--phoenix)/.38);transition:background-color .2s,box-shadow .2s}
+.v2-lev2 .t-sl .st.on{background:hsl(var(--phoenix));box-shadow:none}
+.v2-lev2 .t-sl .kn{top:3px;width:22px;height:22px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.5);z-index:2}
+.v2-lev2 .tk{margin:0 11px}
+.v2-lev2 .tk span:first-child{transform:translateX(-11px)}.v2-lev2 .tk span:last-child{transform:translateX(calc(-100% + 11px))}
+.v2-lev2 .t-sl .st{background:hsl(var(--phoenix)/.3);box-shadow:inset 0 0 0 2px hsl(var(--phoenix)/.5)}.v2-lev2 .t-sl .st.on{background:hsl(var(--phoenix));box-shadow:none}
+
+/* leverage: grey stops until reached; labels centred under each circle and clickable */
+.v2-lev2 .t-sl .st{background:hsl(var(--button));box-shadow:inset 0 0 0 2px hsl(var(--button-hover))}
+.v2-lev2 .t-sl .st.on{background:hsl(var(--phoenix));box-shadow:none}
+.v2-lev2 .t-sl .kn,.v2-lev2 .t-sl .fl{transition:left .4s cubic-bezier(.16,1,.3,1),width .4s cubic-bezier(.16,1,.3,1)}
+.v2-lev2 .tk{height:20px;margin:2px 11px 0}
+.v2-lev2 .tk button{position:absolute;top:0;transform:translateX(-50%);padding:2px 6px;border-radius:6px;font:500 11px/16px var(--font);color:hsl(var(--muted-foreground));cursor:pointer;transition:color .15s,background-color .15s}
+.v2-lev2 .tk button:first-child,.v2-lev2 .tk button:last-child{transform:translateX(-50%)}
+.v2-lev2 .tk button:hover{color:hsl(var(--foreground));background:hsl(var(--button)/.6)}
+.v2-lev2 .tk button.on{color:hsl(var(--phoenix));font-weight:600}
+
+/* =====================================================================
+   v2 "calm" pass: one spacing scale (8/16/24), one type scale (12/14/16/24),
+   one level of boxes, colour only where it carries meaning.
+   ===================================================================== */
+html[data-v2]{--s1:8px;--s2:16px;--s3:24px}
+main.grid.t-v2grid{gap:10px;padding:0 10px}
+.t-v2grid .t-hrz{height:10px;margin-bottom:-10px}
+
+/* order form: sections instead of nested cards */
+html[data-v2] .t-form{padding:16px 16px 12px}
+html[data-v2] .t-form .t-fscroll{margin:0 -16px;padding:0 16px 8px;scrollbar-width:thin}
+html[data-v2] .t-form .t-side2{margin-top:var(--s2)}
+html[data-v2] .t-form .t-kv{margin-top:var(--s2);height:24px;padding:0 2px;font-size:12px}
+html[data-v2] .t-form .t-kv b{font-size:14px}
+html[data-v2] .t-form .t-osz{margin-top:var(--s1);padding:16px;border-radius:12px}
+html[data-v2] .v2-pct{margin-top:var(--s1);gap:var(--s1)}
+html[data-v2] .v2-pct button{height:32px;border-radius:8px;font-size:12px}
+html[data-v2] .v2-lev2{margin-top:var(--s3);padding:0;border:0}
+html[data-v2] .v2-lev2 .hd{margin-bottom:var(--s1);font-size:12px}
+html[data-v2] .v2-lev2 .hd b{font-size:14px}
+html[data-v2] .v2-sum{margin-top:var(--s3);gap:0;padding:0}
+html[data-v2] .v2-sum .row{height:32px;padding:0 2px;background:none!important;border-radius:0}
+html[data-v2] .v2-sum .row span{font-size:12px}
+html[data-v2] .v2-sum .row b{font-size:14px}
+html[data-v2] .v2-sum .row b span.sell,html[data-v2] .v2-sum .row b span.buy{font-size:14px}
+html[data-v2] .v2-chks{margin-top:var(--s3)}
+html[data-v2] .v2-tpbox{margin-top:var(--s1)}
+html[data-v2] .t-ffoot{padding-top:var(--s2)}
+html[data-v2] .t-ffoot .t-fbtn{margin-top:0}
+html[data-v2] .t-ffoot .t-sum{margin-top:var(--s1);gap:0}
+html[data-v2] .t-ffoot .t-sum .r{height:28px;font:400 12px/16px var(--font)}
+html[data-v2] .t-ffoot .t-sum .r b{font:600 16px/20px var(--font)}
+
+/* ticker strip + stats row: neutral text, colour only on the arrows / 24h change */
+html[data-v2] .t-tick.v2 .t-tchip .v{color:hsl(var(--muted-foreground))}
+html[data-v2] .t-tick.v2 .t-tchip .v.buy svg{color:hsl(var(--buy))}
+html[data-v2] .t-tick.v2 .t-tchip .v.sell svg{color:hsl(var(--sell))}
+html[data-v2] .t-tick.v2.strip .t-tchip.on,html[data-v2] .t-tick.v2.strip .t-tchip.on:hover{background:hsl(var(--button));box-shadow:none}
+html[data-v2] .t-tick.v2.strip .t-tchip.on .v{color:hsl(var(--foreground))}
+html[data-v2] .t-st .v span.buy:not(.sell),html[data-v2] .t-st .v span.sell{color:hsl(var(--foreground))!important}
+html[data-v2] .t-st .v span.price-increase,html[data-v2] .t-st .v span.price-decrease{color:hsl(var(--foreground))}
+
+/* order book: softer depth bars */
+html[data-v2] .t-row.a .bt{background:hsl(var(--sell)/.07)}html[data-v2] .t-row.a .bs{background:hsl(var(--sell)/.13)}
+html[data-v2] .t-row.b .bt{background:hsl(var(--buy)/.07)}html[data-v2] .t-row.b .bs{background:hsl(var(--buy)/.13)}
+
+/* positions: neutral market names */
+html[data-v2] .pp-sym{color:hsl(var(--foreground))!important}
+html[data-v2] .t-st .v>span{color:hsl(var(--foreground))!important}html[data-v2] .pp-mk~td,html[data-v2] td.pp-mkp{color:inherit}
+
+/* ---- box labels: S1 strip, S2 chart, S3 order book, S4 order form, S5 positions. Hide with ?nolabels ---- */
+main.t-v2grid:not(.nol)>.t-tkp,main.t-v2grid:not(.nol)>.t-merge,main.t-v2grid:not(.nol)>.t-book,main.t-v2grid:not(.nol)>.t-form,main.t-v2grid:not(.nol)>.t-pos{position:relative}
+main.t-v2grid:not(.nol)>.t-tkp::after,main.t-v2grid:not(.nol)>.t-merge::after,main.t-v2grid:not(.nol)>.t-book::after,main.t-v2grid:not(.nol)>.t-form::after,main.t-v2grid:not(.nol)>.t-pos::after{position:absolute;top:4px;left:4px;z-index:30;pointer-events:none;padding:0 6px;border-radius:9999px;background:hsl(var(--background)/.88);color:hsl(var(--phoenix));box-shadow:inset 0 0 0 1px hsl(var(--phoenix)/.6);font:700 11px/18px var(--font);letter-spacing:.04em}
+main.t-v2grid>.t-tkp::after{content:"S1"}main.t-v2grid>.t-merge::after{content:"S2"}main.t-v2grid>.t-book::after{content:"S3"}main.t-v2grid>.t-form::after{content:"S4"}main.t-v2grid>.t-pos::after{content:"S5"}
+main.t-v2grid:not(.nol)>.t-tkp::after{left:auto;right:46px;top:2px}
+main.t-v2grid:not(.nol)>.t-tkp::after,main.t-v2grid:not(.nol)>.t-merge::after,main.t-v2grid:not(.nol)>.t-book::after,main.t-v2grid:not(.nol)>.t-form::after,main.t-v2grid:not(.nol)>.t-pos::after{width:24px;height:18px;padding:0;text-align:center;box-sizing:border-box}
+
+/* ---- idle order maths: greyed out until a wallet is connected and a real size is entered (?v2) ---- */
+html[data-v2] .v2-sum .row span,html[data-v2] .v2-sum .row b,html[data-v2] .v2-sum .row em,html[data-v2] .t-sum .r span,html[data-v2] .t-sum .r b,html[data-v2] .t-sum .r em{transition:color .15s ease}
+html[data-v2] .v2-sum.idle .row span,html[data-v2] .v2-sum.idle .row b,html[data-v2] .v2-sum.idle .row b span,html[data-v2] .v2-sum.idle .row em,
+html[data-v2] .t-sum.idle .r span,html[data-v2] .t-sum.idle .r b,html[data-v2] .t-sum.idle .r em,html[data-v2] .t-sum.idle .r .ed{color:hsl(var(--muted-foreground)/.5)!important}
+
+/* =====================================================================
+   S5 redesign (?v2): Positions, Open Orders, Balances read at a glance.
+   Two-line cells (value over context), one hero number per row (PnL),
+   liquidation shown as a distance bar, quiet count badges on the tabs.
+   ===================================================================== */
+.pv-n{display:inline-block;margin-left:6px;min-width:18px;height:18px;padding:0 5px;border-radius:9999px;background:hsl(var(--button));color:hsl(var(--muted-foreground));font:600 11px/18px var(--font);text-align:center;vertical-align:1px}
+.pp-tabs button.on .pv-n{color:hsl(var(--foreground))}
+.pv{display:flex;flex-direction:column;min-width:640px}
+.pv-h,.pv-r{display:grid;align-items:center;column-gap:16px;padding:0 6px}
+.pv-h{position:sticky;top:0;z-index:2;height:30px;background:hsl(var(--card));font:500 11px/16px var(--font);color:hsl(var(--muted-foreground));letter-spacing:.02em}
+.pv-h .r{text-align:right}
+.pv-pos{grid-template-columns:minmax(150px,1.3fr) minmax(118px,1fr) minmax(96px,.9fr) minmax(128px,1.1fr) minmax(84px,.8fr) minmax(104px,.9fr) minmax(138px,auto)}
+.pv-ord{grid-template-columns:22px minmax(150px,1.2fr) minmax(120px,1fr) minmax(130px,1fr) minmax(104px,.8fr) minmax(84px,auto)}
+.pv-asset{grid-template-columns:minmax(150px,1.3fr) minmax(120px,1fr) minmax(190px,auto)}
+.pv-r{min-height:54px;padding-top:6px;padding-bottom:6px;border-top:1px solid hsl(var(--border)/.6);border-radius:0}
+.pv-r:hover{background:hsl(var(--card-light)/.5)}
+.pv-c{display:flex;flex-direction:column;gap:2px;min-width:0}
+.pv-top{display:flex;align-items:center;gap:6px;font:500 13px/18px var(--font);color:hsl(var(--foreground));white-space:nowrap}
+.pv-top.buy{color:hsl(var(--buy))}.pv-top.sell{color:hsl(var(--sell))}
+.pv-top i{font-style:normal;font-weight:400;font-size:11px;color:hsl(var(--muted-foreground));min-width:32px}
+.pv-sub{font:400 12px/16px var(--font);color:hsl(var(--muted-foreground));white-space:nowrap}
+.pv-big{font:600 15px/20px var(--font)}
+.pv-c.buy .pv-sub,.pv-c.sell .pv-sub{color:inherit;opacity:.8}
+.pv-sym{font:600 14px/18px var(--font);color:hsl(var(--foreground));cursor:pointer}
+a.pv-sym:hover{text-decoration:underline;text-underline-offset:2px}
+.pv-pill{display:inline-block;height:18px;padding:0 6px;border-radius:5px;font:600 11px/18px var(--font)}
+.pv-pill.buy{background:hsl(var(--buy)/.14);color:hsl(var(--buy))}.pv-pill.sell{background:hsl(var(--sell)/.14);color:hsl(var(--sell))}
+.pv-lev{font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.pv-risk{display:flex;align-items:center;gap:6px;font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.pv-risk b{display:block;width:44px;height:4px;border-radius:2px;background:hsl(var(--button));overflow:hidden}
+.pv-risk b i{display:block;height:100%;border-radius:2px;background:hsl(var(--muted-foreground))}
+.pv-risk.mid{color:hsl(var(--phoenix))}.pv-risk.mid b i{background:hsl(var(--phoenix))}
+.pv-risk.bad{color:hsl(var(--sell))}.pv-risk.bad b i{background:hsl(var(--sell))}
+.pv-add{align-self:flex-start;height:24px;padding:0 10px;border-radius:6px;border:1px dashed hsl(var(--muted-foreground)/.4);color:hsl(var(--muted-foreground));font:500 12px/16px var(--font)}
+.pv-add:hover{color:hsl(var(--foreground));border-color:hsl(var(--muted-foreground)/.8)}
+.pv-end{flex-direction:row;justify-content:flex-end;align-items:center;gap:6px}
+.pv-close{height:28px;padding:0 12px;border-radius:7px;background:hsl(var(--button));color:hsl(var(--foreground));font:600 12px/16px var(--font);transition:background-color .1s ease-out}
+.pv-close:hover:not(:disabled){background:hsl(var(--button-hover))}.pv-close:disabled{opacity:.4;cursor:not-allowed}
+.pv-ib{width:24px;height:24px;border-radius:6px;display:grid;place-items:center;color:hsl(var(--muted-foreground));opacity:.7}
+.pv-r:hover .pv-ib,.pv-ib:hover{opacity:1;color:hsl(var(--foreground))}
+.pv-link{font:500 12px/16px var(--font);color:hsl(var(--muted-foreground))}.pv-link:hover{color:hsl(var(--foreground))}
+.pv-prog{display:block;height:4px;width:90px;border-radius:2px;background:hsl(var(--button));overflow:hidden}.pv-prog i{display:block;height:100%;background:hsl(var(--phoenix))}
+.pv-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;padding:10px 0 12px}
+.pv-tile{display:flex;flex-direction:column;gap:2px;padding:10px 14px;border-radius:10px;background:hsl(var(--card-light))}
+.pv-tile b{font:600 18px/24px var(--font)}.pv-tile b.buy{color:hsl(var(--buy))}.pv-tile b.sell{color:hsl(var(--sell))}
+/* the other tabs in v2: a little more room per row so the whole panel breathes */
+.pp.pv-on .pp-tbl td{padding-top:8px;padding-bottom:8px}
+/* leave room under the last row so the floating dock never hides it */
+.pp.pv-on .pp-body{padding-bottom:64px}
+
+/* =====================================================================
+   Order book (?v2), Backpack-style: one deep scrollable ladder; the mid row
+   (grouping / Spread / %) sticks to the top or bottom edge when you scroll
+   away; a "Recenter" pill rises from the bottom edge, above the buy/sell bar.
+   ===================================================================== */
+.t-lad.sc{display:block;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;overscroll-behavior:contain}
+.t-lad.sc::-webkit-scrollbar{display:none}
+.t-lad.sc .t-side{display:block;flex:none;overflow:visible;min-height:0}
+.t-lad.sc .t-row{height:22px}
+.t-lad.sc .t-spr.stk{position:sticky;top:0;bottom:0;z-index:4}
+.t-rcw{position:sticky;bottom:0;height:0;overflow:visible;z-index:5;pointer-events:none}
+.t-rc{position:absolute;left:50%;bottom:10px;display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border-radius:9999px;background:hsl(var(--button));color:hsl(var(--foreground));box-shadow:0 0 0 1px hsl(var(--border)),0 4px 12px rgb(0 0 0/.45);font:600 12px/16px var(--font);white-space:nowrap;opacity:0;transform:translate(-50%,14px);pointer-events:none;transition:opacity .2s ease,transform .25s cubic-bezier(.16,1,.3,1),background-color .15s ease}
+.t-rc svg{color:hsl(var(--phoenix))}
+.t-rc.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.t-rc.show:hover{background:hsl(var(--button-hover))}
+.t-ratio{flex:none;display:flex;gap:2px;height:22px;margin:6px 0 6px;font:600 11px/22px var(--font)}
+.t-ratio span{min-width:34px;padding:0 8px;border-radius:4px;transition:flex .3s ease}
+.t-ratio .b{background:hsl(var(--buy)/.2);color:hsl(var(--buy));text-align:left}
+.t-ratio .a{background:hsl(var(--sell)/.2);color:hsl(var(--sell));text-align:right}
+/* tighter sides: the book sits closer to its border (default view) */
+html[data-v2] .t-book.m-tabs{padding-left:4px;padding-right:4px}
+html[data-v2] .t-book.m-tabs .t-lad{margin:0 -4px}
+html[data-v2] .t-book.m-tabs .t-row,html[data-v2] .t-book.m-tabs .t-spr{padding-left:4px;padding-right:4px}
+
+/* spread strip: a labelled, separate band so it is not read as part of the Price / Size / Total columns */
+.t-lad.sc .t-spr.v2{display:flex;align-items:center;justify-content:center;gap:10px;height:28px;padding:0 6px;background:hsl(var(--card-light));box-shadow:inset 0 1px 0 hsl(var(--border)),inset 0 -1px 0 hsl(var(--border));font:500 12px/16px var(--font)}
+.t-spr.v2 .sp-l{color:hsl(var(--muted-foreground));border-bottom:1px dotted hsl(var(--muted-foreground)/.8);cursor:help;outline:none}
+.t-spr.v2 .sp-l:hover,.t-spr.v2 .sp-l:focus-visible{color:hsl(var(--foreground));border-bottom-color:hsl(var(--foreground))}
+.t-spr.v2 .sp-v{display:inline-flex;align-items:baseline;gap:6px}
+.t-spr.v2 .sp-v b{font-weight:600;color:hsl(var(--foreground))}
+.t-spr.v2 .sp-v i{font-style:normal;color:hsl(var(--muted-foreground))}
+.t-spr.v2 span:nth-child(1),.t-spr.v2 span:nth-child(2){text-align:left}
+.t-sptip{position:absolute;z-index:40;width:216px;transform:translate(-50%,8px);padding:10px 12px;border-radius:8px;background:hsl(var(--card-light));box-shadow:0 0 0 1px hsl(var(--border)),0 8px 24px rgb(0 0 0/.5);font:400 12px/17px var(--font);color:hsl(var(--muted-foreground));pointer-events:none}
+.t-sptip.up{transform:translate(-50%,calc(-100% - 8px))}
+.t-sptip b{color:hsl(var(--foreground));font-weight:600}
+
+/* =====================================================================
+   S1 (?v2): the list selectors are folder tabs attached to the top edge of the strip box,
+   so the old empty row above it is gone. Tab (22px) + box (38px).
+   ===================================================================== */
+main.t-v2grid>.t-v2head{opacity:1;transform:none;pointer-events:auto;overflow:visible;position:relative;z-index:5;height:22px;padding:0;align-self:end}
+main.t-v2grid>.t-v2head.two{padding:0}
+main.t-v2grid>.t-v2head .t-vc{height:22px;align-items:flex-end;gap:6px;padding-left:0!important}
+main.t-v2grid>.t-v2head .t-vsel{height:22px;padding:0 10px 0 8px;gap:6px;border-radius:8px 8px 0 0;background:hsl(var(--card));border:1px solid hsl(var(--border));border-bottom:0;color:hsl(var(--foreground));font:600 12px/16px var(--font)}
+main.t-v2grid>.t-v2head .t-vsel:hover{background:hsl(var(--card-light))}
+main.t-v2grid>.t-v2head .t-vadd{width:22px;height:22px;border-radius:8px 8px 0 0;box-shadow:none;border:1px solid hsl(var(--border));border-bottom:0;background:hsl(var(--card));color:hsl(var(--muted-foreground))}
+main.t-v2grid>.t-v2head .t-vadd:hover{background:hsl(var(--card-light));color:hsl(var(--foreground))}
+/* the box is pulled up 11px (the 10px v2 grid gap + the tab's 1px) so it touches the tabs, and made 11px taller to keep its bottom edge */
+main.t-v2grid.one>.t-tkp,main.t-v2grid>.t-tkp{margin-top:-11px;height:calc(100% + 11px);align-self:start;border-top-left-radius:0}
+main.t-v2grid>.t-tkp>.t-tick.v2.strip{height:100%;padding:0}
+main.t-v2grid>.t-tkp .t-tick.v2.strip .t-gl{padding:4px 0}
+main.t-v2grid>.t-tkp .t-tick.v2.strip .t-tchip{height:28px;padding:0 8px;gap:6px;font:500 13px/18px var(--font)}
+
+/* =====================================================================
+   TP/SL focus mode (?v2): while the sheet is open (from the order form, or from a position's edit button) everything except
+   the sheet, the chart (with its draggable pills), the order book and the position being edited is dimmed and disabled.
+   ===================================================================== */
+html[data-tpf] .nav,html[data-tpf] .dock,html[data-tpf] footer,html[data-tpf] .footer,
+html[data-tpf] main.t-v2grid>.t-tkp,html[data-tpf] main.t-v2grid>.t-v2head,html[data-tpf] .t-merge>.t-mst,html[data-tpf] .t-merge>.t-vw,html[data-tpf] .t-merge .t-vwb,
+html[data-tpf] .pp.pv-focus .pp-hd,html[data-tpf] .pp.pv-focus .pv-h,html[data-tpf] .pp.pv-focus .pv-r:not(.pv-edit){opacity:.32;filter:saturate(.6);pointer-events:none;user-select:none}
+html[data-tpf] .nav,html[data-tpf] .dock,html[data-tpf] footer,html[data-tpf] .footer,html[data-tpf] main.t-v2grid>.t-tkp,html[data-tpf] main.t-v2grid>.t-v2head,html[data-tpf] .t-merge>.t-mst,html[data-tpf] .pp.pv-focus .pp-hd,html[data-tpf] .pp.pv-focus .pv-h,html[data-tpf] .pp.pv-focus .pv-r{transition:opacity .2s ease,filter .2s ease}
+/* the position being edited stays exactly as it normally looks (full brightness, no highlight); only the others are dimmed */
+.pp.pv-focus .pv-r.pv-edit .pv-ib,.pp.pv-focus .pv-r.pv-edit .pv-add{pointer-events:none}
+/* position summary and Cancel / Save in the sheet header while editing a position */
+.v2-tps .hd .eb{display:inline-flex;gap:8px}
+.v2-tps .hd .cancel{height:28px;padding:0 12px;border-radius:8px;background:hsl(var(--button));color:hsl(var(--foreground));font:600 12px/16px var(--font)}
+.v2-tps .hd .cancel:hover{background:hsl(var(--button-hover))}
+.v2-tps .pinfo{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 12px;padding:8px 10px;border-radius:8px;background:hsl(var(--card-light));font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.v2-tps .pinfo b{color:hsl(var(--foreground));font-weight:600}
+.v2-tps .pinfo i{width:1px;height:12px;background:hsl(var(--border))}
+
+/* ---- Close position (v2): the result first (what you realise), then size, then details ---- */
+.cl{display:flex;flex-direction:column;gap:14px}
+.cl-pos{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.cl-pos b{color:hsl(var(--foreground));font-weight:600}.cl-pos i{width:1px;height:12px;background:hsl(var(--border))}
+.cl-sz{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.cl-qk{display:flex;gap:6px}
+.cl-qk button{height:30px;min-width:44px;padding:0 10px;border-radius:8px;background:hsl(var(--button));color:hsl(var(--muted-foreground));font:600 12px/16px var(--font);transition:background-color .1s ease-out,color .1s ease-out}
+.cl-qk button:hover{background:hsl(var(--button-hover));color:hsl(var(--foreground))}
+.cl-qk button.on{background:hsl(var(--phoenix)/.16);color:hsl(var(--phoenix));box-shadow:inset 0 0 0 1px hsl(var(--phoenix)/.55)}
+.cl-in{display:flex;align-items:center;gap:6px;height:30px;padding:0 10px;border-radius:8px;background:hsl(var(--input));min-width:0}
+.cl-in input{width:84px;background:none;border:0;outline:0;text-align:right;font:600 13px/16px var(--font);color:hsl(var(--foreground));min-width:0}
+.cl-in span{font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.cl-in em{font-style:normal;font:400 12px/16px var(--font);color:hsl(var(--muted-foreground));padding-left:6px;border-left:1px solid hsl(var(--border))}
+.cl-hero{display:flex;align-items:baseline;gap:10px;padding:12px 14px;border-radius:10px;background:hsl(var(--card-light))}
+.cl-hero span{font:400 12px/16px var(--font);color:hsl(var(--muted-foreground));margin-right:auto}
+.cl-hero b{font:600 24px/30px var(--font)}.cl-hero em{font-style:normal;font:500 13px/16px var(--font);opacity:.85}
+.cl-sum{background:none;padding:0 2px}
+.cl-sum .r.tot{min-height:34px}.cl-sum .r.tot span{color:hsl(var(--foreground));font-weight:600}.cl-sum .r.tot b{font-weight:600;font-size:15px}
+.cl-note{margin:0;font:400 12px/17px var(--font);color:hsl(var(--muted-foreground))}
+.t-dlg .cta.cl-go{margin-top:2px;background:hsl(var(--phoenix));color:#000;font-weight:700}
+.t-dlg .cta.cl-go:hover{background:hsl(var(--phoenix)/.9)}
+
+/* the S1-S5 box labels are only drawn with ?labels */
+main.t-v2grid.nol>.t-tkp::after,main.t-v2grid.nol>.t-merge::after,main.t-v2grid.nol>.t-book::after,main.t-v2grid.nol>.t-form::after,main.t-v2grid.nol>.t-pos::after{content:none!important;display:none!important}
+
+/* =====================================================================
+   RESPONSIVE (768px and up). Row/column sizes come from the --bh / --bw variables set by TradeScreen.
+   >=1280  : chart | book | form (as designed)
+   1024-1279: same three columns, narrower book + form
+   768-1023 : two columns. Chart + form on top, book (book + trades side by side) under the chart, tables full width. The grid scrolls inside itself.
+   ===================================================================== */
+main.grid.t-grid{grid-template-columns:minmax(0,1fr) var(--bw,240px) 320px;grid-template-rows:95px minmax(240px,1fr) var(--bh,200px);overflow-x:hidden;overflow-y:auto;scrollbar-width:thin;scrollbar-color:hsl(var(--button)) transparent}
+main.grid.t-grid.t-v2grid{grid-template-rows:22px 27px minmax(300px,1fr) var(--bh,244px)}
+main.grid.t-grid>.t-pos{min-height:0;min-width:0}
+/* the grid is a flex child with its own scrolling; its children must not be squeezed below their content when it scrolls */
+main.grid.t-grid>*{min-width:0}
+
+@media (max-width:1279px){
+  main.grid.t-grid{grid-template-columns:minmax(0,1fr) min(var(--bw,240px),224px) 296px}
+  .t-merge>.t-mst{padding-right:44px}
+  .t-st{gap:14px}
+  .pv-pos{column-gap:12px;grid-template-columns:minmax(132px,1.2fr) minmax(104px,1fr) minmax(88px,.9fr) minmax(116px,1fr) minmax(70px,.7fr) minmax(88px,.8fr) minmax(128px,auto)}
+}
+@media (max-width:1023px){
+  main.grid.t-grid{grid-template-columns:minmax(0,1fr) 300px;grid-template-areas:"stats form" "chart form" "book form" "pos pos";grid-template-rows:95px 400px 300px 380px}
+  main.grid.t-grid.t-v2grid{grid-template-columns:minmax(0,1fr) 300px;grid-template-areas:"head head" "tick tick" "merge form" "book form" "pos pos";grid-template-rows:22px 27px 440px 300px 380px;padding-bottom:10px}
+  main.grid.t-grid.t-v2grid.nb{grid-template-areas:"head head" "tick tick" "merge form" "merge form" "pos pos"}
+  main.grid.t-grid.t-v2grid.nb>.t-merge{grid-column:auto;grid-area:merge}
+  main.grid.t-grid>.t-hrz,main.grid.t-grid>.t-vrz{display:none}
+  main.grid.t-grid>.t-form{min-height:0}
+  .t-merge>.t-mst{padding-right:44px}
+  .t-grid>.t-pos{grid-area:pos}
+}
+@media (min-width:1024px) and (max-height:760px){
+  main.grid.t-grid.t-v2grid{grid-template-rows:22px 27px minmax(280px,1fr) min(var(--bh,244px),210px)}
+}
+
+/* ---- chart header / footer adapt to the width of the chart panel (class set by ChartPanel from a ResizeObserver) ---- */
+.t-chart .t-seg button .s{display:none}
+.t-chart.c-sm .t-ch-hd{padding-right:3px}
+.t-chart.c-sm .t-ind{font-size:0;gap:0;margin-left:6px;padding:0 2px 0 0;width:32px}
+.t-chart.c-sm .t-ind svg{flex:none}
+.t-chart.c-sm .t-cmp{font-size:0;gap:0;padding:0 8px;width:34px;justify-content:center}
+.t-chart.c-sm .t-cmp svg{flex:none}
+.t-chart.c-sm .t-seg button{width:auto;padding:0 8px}
+.t-chart.c-xs .t-seg button .f{display:none}.t-chart.c-xs .t-seg button .s{display:inline}
+.t-chart.c-xs .t-seg button{padding:0 7px}
+.t-chart.c-xs .t-tf{min-width:30px;padding:0 5px}
+.t-chart.c-xs .t-clk{display:none}
+.t-chart.c-xs .t-ch-ft{padding-left:10px}
+.t-clk{white-space:nowrap}
+.t-ch-hd,.t-ch-ft{min-width:0}
+.t-ch-ft>*{flex:none}
+/* the drawing-tools rail is a purely visual set of toolbar buttons: hide it when the chart gets narrow so candles keep the room */
+.t-chart.c-xs .t-tools{display:none}
+
+/* ---- positions: the table scrolls inside its own panel, never the page; the action column stays pinned at the right edge ---- */
+.pv{min-width:min-content}
+.pv-pos>.pv-end,.pv-pos.pv-h>span.r{position:sticky;right:0;z-index:1;background:hsl(var(--card));box-shadow:-10px 0 8px -4px hsl(var(--card))}
+.pv-pos.pv-h>span.r{z-index:3}
+.pv-r:hover>.pv-end{background:hsl(var(--card))}
+.pp-tabs{scrollbar-width:none}
+.pp-hd{min-width:0}
+@media (max-width:1279px){ .pp-filters .pp-sel .muted{display:none} }
+
+/* ---- chart skeleton (replaces the lone spinner): header chips, a row of pulsing candles, axis labels, footer chips ---- */
+.t-chartload{display:flex!important;flex-direction:column;place-items:initial;padding:10px 8px 8px;gap:10px;align-items:stretch}
+.t-skh,.t-skf{flex:none;display:flex;align-items:center;gap:8px;height:30px;padding:0 6px}
+.t-skh i,.t-skf i{display:block;height:20px;border-radius:6px}
+.t-skb2{flex:1;min-height:0;display:flex;gap:10px;padding:0 4px 0 56px}
+.t-skb2 .cs{flex:1;min-width:0;display:flex;align-items:flex-end;gap:5px;overflow:hidden;border-bottom:1px solid hsl(var(--border)/.6)}
+.t-skb2 .cs .c{flex:1 1 0;min-width:3px;max-width:10px;display:flex;flex-direction:column;justify-content:flex-end;align-self:stretch}
+.t-skb2 .cs b{display:block;flex:none;border-radius:2px;background:hsl(var(--button))}
+.t-skb2 .cs u{display:block;flex:none}
+.t-skb2 .ax{flex:none;width:52px;display:flex;flex-direction:column;justify-content:space-between;padding:6px 0 28px}
+.t-skb2 .ax i{display:block;height:12px;border-radius:4px}
+.t-chart.c-sm .t-skb2{padding-left:8px}
+
+/* book header: never wrap "Size USDC" / "Total USDC" onto two lines in narrow columns */
+.t-bhd span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.t-book.m-side .t-bhd,.t-book.m-side .t-row,.t-book.m-side .t-trow{font-size:11px}
+.t-tools{overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.t-tools::-webkit-scrollbar{display:none}
+@media (max-width:1279px){
+  .pv-pos{column-gap:8px;grid-template-columns:minmax(110px,1.2fr) minmax(88px,1fr) minmax(72px,.9fr) minmax(96px,1fr) minmax(58px,.7fr) minmax(62px,.8fr) minmax(112px,auto)}
+}
+
+/* positions loading skeleton: rows shaped like the real ones, columns collapse on narrow panels */
+.t-pskel{display:flex;flex-direction:column;padding-top:6px}
+.t-pskel .r{display:flex;align-items:center;gap:36px;height:54px;border-top:1px solid hsl(var(--border)/.6)}
+.t-pskel .r i{display:block;height:16px;border-radius:5px;flex:none}
+@media (max-width:1023px){.t-pskel .r{gap:20px}.t-pskel .r .c{display:none}}
+
+/* market picker: drops from the stats row (not from the bottom of the whole chart panel) and never taller than the window */
+.t-merge>.t-mst{position:relative}
+.t-mscroll{max-height:min(384px,calc(100vh - 330px));min-height:120px}
+.t-mtabs{overflow-x:auto;scrollbar-width:none}
+.t-mtabs::-webkit-scrollbar{display:none}
+.t-mtabs button{flex:none;white-space:nowrap}
+.t-mscroll{overflow-x:auto}
+@media (max-width:1023px){.t-msel{width:calc(100vw - 20px)}}
+@media (max-width:1279px){
+  .pv-pos{column-gap:6px;grid-template-columns:minmax(112px,1.2fr) minmax(92px,1fr) minmax(80px,.9fr) minmax(100px,1fr) minmax(58px,.7fr) minmax(64px,.8fr) minmax(112px,auto)}
+  .pv-top i{min-width:26px}
+  .pv-risk{white-space:nowrap}.pv-risk b{width:28px}
+  .pv-end{gap:4px}
+}
+@media (min-width:1280px){ .pv-pos>.pv-end,.pv-pos.pv-h>span.r{position:static;box-shadow:none;background:none} }
+@media (max-width:1279px){ .pv-pos>.pv-c:first-child{overflow:hidden}.pv-pos>.pv-c:first-child .pv-sub{overflow:hidden;text-overflow:ellipsis} }
+
+/* positions table at 1024-1279 (the panel is only ~700px wide there): drop the Margin column so nothing is cut */
+@media (min-width:1024px) and (max-width:1279px){
+  .pv-pos{grid-template-columns:minmax(150px,1.5fr) minmax(96px,1fr) minmax(84px,.9fr) minmax(104px,1fr) minmax(88px,.9fr) minmax(112px,auto)}
+  .pv-pos>:nth-child(5){display:none}
+}
+
+/* ==================== v2 order-form delight: leverage risk tiers, liquidation sentence, rolling digits, price lock, hold to confirm ==================== */
+/* rolling digits (components/RollNum.tsx): one 0-9 column per digit, moved with transform only */
+.rn{display:inline-flex;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rn-d{display:inline-block;height:1lh;overflow:hidden}
+.rn-c{display:flex;flex-direction:column;transition:transform .3s cubic-bezier(.16,1,.3,1);will-change:transform}
+.rn-c>i{display:block;height:1lh;font-style:normal;text-align:center}
+@media (prefers-reduced-motion:reduce){.rn-c{transition:none}}
+.rn,.rn span{font:inherit;color:inherit;letter-spacing:inherit}
+html[data-v2] .v2-sum .row b span.rn,html[data-v2] .v2-sum .row b .rn span{font:inherit;color:inherit}
+
+/* leverage slider: thicker track; stops coloured by the risk tier of that leverage (dimmed until reached); fill = tier of the selected leverage */
+html[data-v2] .v2-lev2 .t-sl .tr,html[data-v2] .v2-lev2 .t-sl .fl{top:11px;height:6px}
+html[data-v2] .v2-lev2 .t-sl .st.lvt-ok{background:hsl(var(--buy)/.22);box-shadow:inset 0 0 0 2px hsl(var(--buy)/.45)}
+html[data-v2] .v2-lev2 .t-sl .st.lvt-mid{background:hsl(var(--phoenix)/.22);box-shadow:inset 0 0 0 2px hsl(var(--phoenix)/.45)}
+html[data-v2] .v2-lev2 .t-sl .st.lvt-bad{background:hsl(var(--sell)/.22);box-shadow:inset 0 0 0 2px hsl(var(--sell)/.45)}
+html[data-v2] .v2-lev2 .t-sl .st.lvt-ok.on{background:hsl(var(--buy));box-shadow:none}
+html[data-v2] .v2-lev2 .t-sl .st.lvt-mid.on{background:hsl(var(--phoenix));box-shadow:none}
+html[data-v2] .v2-lev2 .t-sl .st.lvt-bad.on{background:hsl(var(--sell));box-shadow:none}
+html[data-v2] .v2-lev2 .t-sl.lvt-ok .fl{background:hsl(var(--buy))}
+html[data-v2] .v2-lev2 .t-sl.lvt-mid .fl{background:hsl(var(--phoenix))}
+html[data-v2] .v2-lev2 .t-sl.lvt-bad .fl{background:hsl(var(--sell))}
+html[data-v2] .v2-lev2 .t-sl .fl{transition:left .4s cubic-bezier(.16,1,.3,1),width .4s cubic-bezier(.16,1,.3,1),background-color .2s}
+@media (prefers-reduced-motion:reduce){html[data-v2] .v2-lev2 .t-sl .fl,html[data-v2] .v2-lev2 .t-sl .kn{transition:none}}
+.v2-badge{cursor:help}
+
+/* the liquidation sentence under the leverage control: calm, muted, numbers in the foreground colour */
+.v2-liqs{margin-top:10px;font:400 12px/16px var(--font);color:hsl(var(--muted-foreground))}
+.v2-liqs b{font-weight:600;color:hsl(var(--foreground))}
+
+/* Place Order = price lock: label left, expected price right; the lock closes while placing */
+.t-form .cta.pl{position:relative;overflow:hidden;display:flex;align-items:center;gap:8px;padding:0 16px;user-select:none;-webkit-user-select:none;touch-action:none}
+.t-form .cta.pl>*{position:relative}
+.t-form .cta.pl .hf{position:absolute;inset:0;background:hsl(0 0% 100%/.3);transform:scaleX(0);transform-origin:left center;pointer-events:none}
+.t-form .cta.pl .pll{flex:1;text-align:left}
+.t-form .cta.pl .ex{font:600 14px/20px var(--font);opacity:.85;display:inline-flex;gap:3px}
+.t-form .cta.pl .plk{flex:none;opacity:.8}
+.t-form .cta.pl .plk .shk{transform:translateY(-3px);transition:transform .2s cubic-bezier(.16,1,.3,1)}
+.t-form .cta.pl.locked{cursor:progress}
+.t-form .cta.pl.locked .plk{opacity:1}
+.t-form .cta.pl.locked .plk .shk{transform:none}
+.t-form .cta.pl:focus-visible{outline:2px solid hsl(var(--foreground));outline-offset:2px}
+/* result line: what you actually got vs what the button promised */
+.v2-plres{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;padding:0 4px;animation:v2plIn .2s cubic-bezier(0,0,.2,1)}
+.v2-plres>div{display:flex;flex-direction:column;min-width:0}
+.v2-plres>div b{font:600 12px/16px var(--font);color:hsl(var(--foreground))}
+.v2-plres small{font:400 11px/15px var(--font);color:hsl(var(--muted-foreground))}
+.v2-plres>b{font:600 12px/16px var(--font);white-space:nowrap}
+.v2-plres>b.good{color:hsl(var(--buy))}.v2-plres>b.bad{color:hsl(var(--phoenix))}.v2-plres>b.eq{color:hsl(var(--muted-foreground))}
+@keyframes v2plIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.v2-plres{animation:none}.t-form .cta.pl .plk .shk{transition:none}}
+/* ==================== end v2 order-form delight ==================== */
+
+/* leverage line: one segment per step, each coloured by the risk of the stop it reaches */
+html[data-v2] .v2-lev2 .t-sl .fl.sg{border-radius:0}
+html[data-v2] .v2-lev2 .t-sl .fl.sg-ok{background:hsl(var(--buy))!important}
+html[data-v2] .v2-lev2 .t-sl .fl.sg-mid{background:hsl(var(--phoenix))!important}
+html[data-v2] .v2-lev2 .t-sl .fl.sg-bad{background:hsl(var(--sell))!important}
+
+/* guaranteed price badge on the Place Order button */
+html[data-v2] .t-form .cta.pl .ex{display:inline-flex;align-items:center;gap:6px}
+html[data-v2] .t-form .cta.pl .gp{font-style:normal;font:600 10px/14px var(--font);letter-spacing:.04em;text-transform:uppercase;padding:2px 6px;border-radius:9999px;background:rgb(0 0 0/.16);color:inherit;opacity:.85}
+
+/* Place Order: centred label; the guaranteed price sits as an orange badge on the button's top edge */
+html[data-v2] .t-form .plwrap{position:relative;padding-top:8px}
+html[data-v2] .t-form .cta.pl{justify-content:center}
+html[data-v2] .t-form .cta.pl .pll{flex:none;text-align:center}
+html[data-v2] .t-form .gpb{position:absolute;left:50%;top:-3px;transform:translateX(-50%);z-index:2;display:inline-flex;align-items:center;gap:5px;height:20px;padding:0 10px;border-radius:9999px;background:hsl(var(--phoenix));color:hsl(0 0% 6%);font:600 11px/20px var(--font);white-space:nowrap;box-shadow:0 0 0 2px hsl(var(--card));cursor:help}
+
+/* ===== leverage slider, round 3: thick stripe, ring stops that fill as you reach them ===== */
+html[data-v2] .v2-lev2 .hd{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+html[data-v2] .v2-lev2 .hd>span:first-child{justify-self:start;font:600 12px/16px var(--font);letter-spacing:.04em}
+html[data-v2] .v2-lev2 .hd .v2-badge{justify-self:center;margin:0}
+html[data-v2] .v2-lev2 .hd b{justify-self:end;margin-left:0}
+html[data-v2] .v2-lev2 .t-sl .tr,html[data-v2] .v2-lev2 .t-sl .fl{top:8px;height:12px}
+html[data-v2] .v2-lev2 .t-sl .tr{border-radius:6px}
+html[data-v2] .v2-lev2 .t-sl .fl.sg:first-of-type{border-radius:6px 0 0 6px}
+html[data-v2] .v2-lev2 .t-sl .st,html[data-v2] .v2-lev2 .t-sl .st.on{top:6px;width:16px;height:16px;margin-left:0;border-radius:50%;display:grid;place-items:center;--c:var(--phoenix);background:hsl(var(--card));box-shadow:inset 0 0 0 2px hsl(var(--c)),inset 0 0 0 16px hsl(var(--c)/.16)}
+html[data-v2] .v2-lev2 .t-sl .st.lvt-ok{--c:var(--buy)}html[data-v2] .v2-lev2 .t-sl .st.lvt-mid{--c:var(--phoenix)}html[data-v2] .v2-lev2 .t-sl .st.lvt-bad{--c:var(--sell)}
+html[data-v2] .v2-lev2 .t-sl .st i{display:block;width:16px;height:16px;border-radius:50%;background:hsl(var(--c));transform:scale(var(--f,.34));transition:transform .18s cubic-bezier(.16,1,.3,1)}
+html[data-v2] .v2-lev2 .t-sl .st:not(.on){opacity:.85}
+@media (prefers-reduced-motion:reduce){html[data-v2] .v2-lev2 .t-sl .st i{transition:none}}
+
+/* order book centre row: spread label, value and % centred */
+html[data-v2] .t-lad.sc .t-spr.v2.bk-mid:not(.pv){justify-content:center}
+
+/* resize handle between chart and book: centred in the 10px gap; breathing room above the footer */
+html[data-v2] .t-vrz{margin-right:-12px!important}
+html[data-v2] main.grid.t-v2grid{padding-bottom:10px}
+
+/* ===== leverage: stops and ranges (components/trade/LevBar.tsx) ===== */
+html[data-v2]{--lt-ok:var(--buy);--lt-mid:var(--phoenix);--lt-bad:var(--sell)}
+.lvb{position:relative;margin-top:2px}
+.lvb-bar{position:relative;display:flex;align-items:stretch;gap:8px;height:22px;cursor:ew-resize;user-select:none;-webkit-user-select:none;touch-action:none;outline:none;border-radius:6px}
+.lvb-bar:focus-visible{box-shadow:0 0 0 2px hsl(var(--phoenix))}
+.lvb-a{width:22px;flex:none;border-radius:6px;background:hsl(0 0% 100%/.08);transition:background-color .1s}
+.lvb-a.on{background:hsl(var(--bc))}
+.lvb-a.cur{box-shadow:inset 0 0 0 2px #fff}
+.lvb-b{position:relative;flex:1;border-radius:6px;background:hsl(0 0% 100%/.08);overflow:hidden}
+.lvb-b .f,.lvb-b .g{position:absolute;inset:0;transform-origin:left center;transition:transform .1s cubic-bezier(.16,1,.3,1)}
+.lvb-b .f{background:hsl(var(--bc))}
+.lvb-b .g{background:hsl(var(--bc)/.35)}
+.lvb-b .e{position:absolute;top:0;bottom:0;width:2px;margin-left:-2px;background:#fff;transition:left .1s cubic-bezier(.16,1,.3,1)}
+.lvb-tip{position:absolute;bottom:calc(100% + 8px);transform:translateX(-50%);font:600 12px/20px var(--font);padding:0 8px;border-radius:6px;background:hsl(var(--foreground));color:#000;white-space:nowrap;pointer-events:none;z-index:3}
+.lvb-labs{position:relative;height:18px;margin-top:4px}
+.lvb-labs button{position:absolute;top:0;transform:translateX(-50%);padding:1px 4px;border-radius:5px;font:500 11px/16px var(--font);color:hsl(var(--muted-foreground));transition:color .15s}
+.lvb-labs button:hover{color:hsl(var(--foreground))}
+.lvb-labs button.on{color:hsl(var(--foreground));font-weight:600}
+@media (prefers-reduced-motion:reduce){.lvb-b .f,.lvb-b .g,.lvb-b .e,.lvb-a{transition:none}}
+
+/* leverage bar stop labels: 10x orange, 25x red (contrast on the panel: orange 8.3:1, red 5.5:1) */
+.lvb-labs button.lt-mid{color:hsl(var(--phoenix))}
+.lvb-labs button.lt-bad{color:hsl(var(--sell))}
+.lvb-labs button.lt-mid:hover,.lvb-labs button.lt-bad:hover{filter:brightness(1.12)}
+
+/* price protection: a folder tab attached to the top-left of Place Order, same family as the Most Active tab */
+html[data-v2] .t-form .plwrap{padding-top:20px}
+html[data-v2] .t-form .gpb{display:none}
+html[data-v2] .t-form .gpt{position:absolute;left:0;top:0;height:21px;display:inline-flex;align-items:center;padding:0 10px;border-radius:8px 8px 0 0;font:500 11px/21px var(--font);z-index:1}
+html[data-v2] .t-form .gpt.buy{background:hsl(var(--buy));color:hsl(150 60% 8%)}
+html[data-v2] .t-form .gpt.sell{background:hsl(var(--sell));color:hsl(0 60% 10%)}
+html[data-v2] .t-form .gpt .dtip{text-decoration-color:currentColor;color:inherit}
+html[data-v2] .t-form .gpt .roll,html[data-v2] .t-form .gpt b{font-weight:600}
+html[data-v2] .t-form .plwrap:has(.gpt) .cta.pl{border-top-left-radius:0}
+
+/* ===== v2 positions filters + chart compare (PositionsPanel.tsx, ChartPanel.tsx, CompareDialog.tsx) ===== */
+html[data-v2] .pp-filters .pp-selbtn{height:28px;padding:0 10px;gap:6px;border-radius:8px}
+html[data-v2] .pp-filters .pp-show{font:500 12px/16px var(--font);color:hsl(var(--foreground))}
+html[data-v2] .pp-filters .pp-sel.open .pp-selbtn{border-color:hsl(var(--phoenix)/.55)}
+html[data-v2] .pp-filters .pp-selbtn:focus-visible,html[data-v2] .pp-filters .pp-selmenu button:focus-visible{outline:1px solid hsl(var(--phoenix));outline-offset:1px}
+html[data-v2] .pp-filters .pp-selmenu{top:34px;bottom:auto;min-width:140px;transform-origin:top right;--pop-origin:top right;--e-y:-.5rem;--x-y:-.5rem;z-index:40}
+html[data-v2] .pp-filters .pp-selmenu.pop-in[data-state='closed']{--x-y:-.5rem}
+html[data-v2] .pp-filters .pp-selmenu button.on{color:hsl(var(--phoenix))}
+html[data-v2] .pp-filters .pp-selmenu button:focus{background:hsl(var(--button))}
+.pp-clearf{color:hsl(var(--phoenix))!important;text-decoration:none!important}
+.pp-clearf:hover{opacity:.8}
+html[data-v2] .t-cmp.on{color:hsl(var(--phoenix));border-color:hsl(var(--phoenix)/.5);background:hsl(var(--phoenix)/.08)}
+html[data-v2] .t-cmp.on:hover{background:hsl(var(--phoenix)/.14);color:hsl(var(--phoenix))}
+.t-cmpleg{position:absolute;left:44px;top:44px;z-index:3;display:flex;gap:6px;pointer-events:auto}
+.t-cmpchip{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 4px 0 8px;border-radius:999px;background:hsl(var(--card)/.92);border:1px solid hsl(var(--border));font:500 12px/16px var(--font);color:hsl(var(--foreground))}
+.t-cmpchip>i{width:10px;height:2px;border-radius:1px;background:var(--cc)}
+.t-cmpchip>b{font-weight:500;color:var(--cc)}
+.t-cmpchip>button{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;color:hsl(var(--muted-foreground));transition:color .15s var(--ease-in-out),background-color .15s var(--ease-in-out)}
+.t-cmpchip>button:hover{color:hsl(var(--foreground));background:hsl(var(--button))}
+.t-ch-ft .t-tg:disabled{cursor:default;opacity:.9}
+.cp.cp-v2{height:372px}
+.cp-v2 .cp-note{flex:none;margin-top:8px;padding:0 4px;font:400 11px/14px var(--font);color:hsl(var(--muted-foreground))}
+.cp-v2 .it.kb{background:hsl(var(--card-light))}
+.cp-v2 .it.on .pl{color:hsl(var(--phoenix))}
+/* ===== end v2 positions filters + chart compare ===== */
